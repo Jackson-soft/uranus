@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bits/c++config.h>
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -15,6 +15,7 @@
 
 #include "connection.hpp"
 #include "io_pool.hpp"
+#include "log.hpp"
 
 namespace Uranus::WebSocket
 {
@@ -78,6 +79,12 @@ public:
         return true;
     }
 
+    void run()
+    {
+        doAccept();
+        ioPool.run();
+    }
+
     void doAccept()
     {
         acceptor.async_accept(ioPool.getIOContext(), boost::beast::bind_front_handler(&Server::onAccept, this));
@@ -93,12 +100,6 @@ public:
             std::make_shared<Connection>(std::move(socket))->run();
         }
         doAccept();
-    }
-
-    void run()
-    {
-        doAccept();
-        ioPool.run();
     }
 
     void stop() { ioPool.stop(); }
@@ -121,7 +122,7 @@ private:
         if (ec == boost::asio::error::operation_aborted)
             return;
 
-        std::cerr << what << ": " << ec.message() << "\n";
+        LogHelper::instance().error("{}:{}", what, ec.message());
     }
 
     IOPool ioPool;

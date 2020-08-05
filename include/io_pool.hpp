@@ -9,21 +9,22 @@
 #include <thread>
 #include <vector>
 
-namespace Uranus::WebSocket
+namespace Uranus
 {
 class IOPool: public boost::noncopyable
 {
 public:
-    ~IOPool() { stop(); }
-
-    explicit IOPool(std::size_t size = std::thread::hardware_concurrency()): ioContexts(size)
+    explicit IOPool(std::size_t size = std::thread::hardware_concurrency())
     {
+        ioContexts.reserve(size);
         for (std::size_t i = 0; i < size; i++) {
             auto ioContext = std::make_shared<boost::asio::io_context>();
             ioContexts.emplace_back(ioContext);
             works.emplace_back(boost::asio::make_work_guard(*ioContext));
         }
     }
+
+    ~IOPool() { stop(); }
 
     void run()
     {
@@ -50,7 +51,7 @@ public:
 
     auto getIOContext() -> boost::asio::io_context &
     {
-        auto &ioContext = *ioContexts.at(nextIOContext);
+        boost::asio::io_context &ioContext = *ioContexts.at(nextIOContext);
         ++nextIOContext;
         if (nextIOContext == ioContexts.size()) {
             nextIOContext = 0;

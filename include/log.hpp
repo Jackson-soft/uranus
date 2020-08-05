@@ -45,7 +45,7 @@ public:
 private:
     LogHelper()
     {
-        log = spdlog::rotating_logger_mt("room", "logs/rotating.txt", 1048576 * 5, 3);
+        log = spdlog::rotating_logger_mt("room", "logs/rotating.log", 1048576 * 5, 3);
         log->set_level(spdlog::level::info);
         spdlog::flush_every(std::chrono::seconds(5));
     }
