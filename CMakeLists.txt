@@ -8,7 +8,9 @@ find_package(Boost REQUIRED COMPONENTS)
 find_package(spdlog REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
+find_library(libpqxx REQUIRED)
+
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 add_executable(${PROJECT_NAME} test/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES} spdlog::spdlog yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES} spdlog::spdlog yaml-cpp ${libpqxx_LIBRARIES})
