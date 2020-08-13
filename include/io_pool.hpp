@@ -65,4 +65,4 @@ private:
     std::list<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> works;
     std::size_t nextIOContext{0};
 };
-}  // namespace Uranus::WebSocket
+}  // namespace Uranus
