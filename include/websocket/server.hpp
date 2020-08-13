@@ -36,8 +36,6 @@ public:
     {
         if (port == 0)
             return false;
-        if (portIsUsed(port))
-            return false;
 
         auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
 
@@ -105,18 +103,6 @@ public:
     void stop() { ioPool.stop(); }
 
 private:
-    auto portIsUsed(std::uint16_t port) -> bool
-    {
-        boost::asio::io_context ioc;
-        boost::asio::ip::tcp::acceptor acceptor(ioc);
-
-        boost::system::error_code ec;
-        acceptor.open(boost::asio::ip::tcp::v4(), ec);
-        acceptor.bind({boost::asio::ip::tcp::v4(), port}, ec);
-
-        return ec == boost::system::errc::address_in_use;
-    }
-
     void fail(boost::system::error_code ec, char const *what)
     {
         if (ec == boost::asio::error::operation_aborted)
@@ -125,7 +111,7 @@ private:
         LogHelper::instance().error("{}:{}", what, ec.message());
     }
 
-    IOPool ioPool;
+    IOPool ioPool{};
     boost::asio::ip::tcp::acceptor acceptor;
 };
 }  // namespace Uranus::WebSocket

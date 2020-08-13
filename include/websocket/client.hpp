@@ -78,11 +78,7 @@ public:
         return true;
     }
 
-    void run()
-    {
-        // boost::asio::spawn(ioContext,std::bind());
-        ioContext.run();
-    }
+    void run() { ioContext.run(); }
 
     void write(std::string_view text)
     {

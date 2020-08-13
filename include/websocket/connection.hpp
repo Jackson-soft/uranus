@@ -5,11 +5,13 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/core/make_printable.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/beast/websocket/error.hpp>
 #include <boost/beast/websocket/rfc6455.hpp>
 #include <boost/system/error_code.hpp>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -27,7 +29,7 @@ class Connection: public std::enable_shared_from_this<Connection>
 public:
     explicit Connection(boost::asio::ip::tcp::socket &&socket): ws(std::move(socket)) {}
 
-    ~Connection() { close(); }
+    ~Connection() = default;
 
     void run()
     {
@@ -35,11 +37,8 @@ public:
                               boost::beast::bind_front_handler(&Connection::onRun, shared_from_this()));
     }
 
-    // auto socket() -> boost::asio::ip::tcp::socke & {}
-
     void onRun()
     {
-
         // Set suggested timeout settings for the websocket
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::server));
 
@@ -70,14 +69,17 @@ public:
         if (ec == boost::beast::websocket::error::closed)
             return;
 
-        if (ec)
+        if (ec) {
             fail(ec, "read");
+        }else {
+            std::cout << boost::beast::make_printable(buffer.data()) << std::endl;
 
-        // consume the data
-        buffer.consume(buffer.size());
+            // consume the data
+            buffer.consume(buffer.size());
 
-        // Read another message
-        ws.async_read(buffer, boost::beast::bind_front_handler(&Connection::onRead, shared_from_this()));
+            // Read another message
+            ws.async_read(buffer, boost::beast::bind_front_handler(&Connection::onRead, shared_from_this()));
+        }
     }
 
     void write(std::string_view text)

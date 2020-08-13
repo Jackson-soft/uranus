@@ -21,8 +21,8 @@ namespace Uranus::WebSocket
 class URI
 {
 public:
-    URI()  = default;
-    ~URI() = default;
+    URI() noexcept = default;
+    ~URI()         = default;
 
     auto parse(std::string_view rawurl) -> bool
     {
