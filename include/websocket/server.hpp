@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bits/c++config.h>
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -15,10 +15,10 @@
 
 #include "connection.hpp"
 #include "io_pool.hpp"
+#include "log.hpp"
 
 namespace Uranus::WebSocket
 {
-
 using handler = std::function<void()>;
 
 class Server
@@ -34,8 +34,6 @@ public:
     auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {
         if (port == 0)
-            return false;
-        if (portIsUsed(port))
             return false;
 
         auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
@@ -78,6 +76,12 @@ public:
         return true;
     }
 
+    void run()
+    {
+        doAccept();
+        ioPool.run();
+    }
+
     void doAccept()
     {
         acceptor.async_accept(ioPool.getIOContext(), boost::beast::bind_front_handler(&Server::onAccept, this));
@@ -95,33 +99,18 @@ public:
         doAccept();
     }
 
-    void run()
-    {
-        doAccept();
-        ioPool.run();
-    }
+    // 设置消息处理回调
+    void setHandler() {}
 
     void stop() { ioPool.stop(); }
 
 private:
-    auto portIsUsed(std::uint16_t port) -> bool
-    {
-        boost::asio::io_context ioc;
-        boost::asio::ip::tcp::acceptor acceptor(ioc);
-
-        boost::system::error_code ec;
-        acceptor.open(boost::asio::ip::tcp::v4(), ec);
-        acceptor.bind({boost::asio::ip::tcp::v4(), port}, ec);
-
-        return ec == boost::system::errc::address_in_use;
-    }
-
     void fail(boost::system::error_code ec, char const *what)
     {
         if (ec == boost::asio::error::operation_aborted)
             return;
 
-        std::cerr << what << ": " << ec.message() << "\n";
+        LogHelper::instance().error("{}:{}", what, ec.message());
     }
 
     IOPool ioPool;

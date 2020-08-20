@@ -22,8 +22,8 @@ namespace Uranus::WebSocket
 class URI
 {
 public:
-    URI()  = default;
-    ~URI() = default;
+    URI() noexcept = default;
+    ~URI()         = default;
 
     auto parse(std::string_view rawurl) -> bool
     {
@@ -32,9 +32,13 @@ public:
         return false;
     }
 
-    auto hostname() -> std::string & { return host; }
+    auto hostname() -> std::string const & { return host; }
 
     auto port() -> std::uint16_t { return port_; }
+
+    auto path() -> std::string const & { return path_; }
+
+    auto query() -> std::string const & { return query_; }
 
     auto isAbs() -> bool { return !scheme.empty(); }
 
@@ -42,8 +46,8 @@ private:
     std::string scheme;
     std::string host;
     std::uint16_t port_;
-    std::string path;
-    std::string query;
-    std::string fragment;
+    std::string path_{"/"};
+    std::string query_;
+    std::string fragment_;
 };
 }  // namespace Uranus::WebSocket
