@@ -2,6 +2,7 @@
 
 #include <bits/c++config.h>
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/connect.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/post.hpp>
 #include <boost/beast/core.hpp>

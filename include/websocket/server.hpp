@@ -19,7 +19,6 @@
 
 namespace Uranus::WebSocket
 {
-
 using handler = std::function<void()>;
 
 class Server
@@ -100,6 +99,9 @@ public:
         doAccept();
     }
 
+    // 设置消息处理回调
+    void setHandler() {}
+
     void stop() { ioPool.stop(); }
 
 private:
@@ -111,7 +113,7 @@ private:
         LogHelper::instance().error("{}:{}", what, ec.message());
     }
 
-    IOPool ioPool{};
+    IOPool ioPool;
     boost::asio::ip::tcp::acceptor acceptor;
 };
 }  // namespace Uranus::WebSocket

@@ -3,6 +3,7 @@
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/make_printable.hpp>
@@ -27,7 +28,7 @@ namespace Uranus::WebSocket
 class Connection: public std::enable_shared_from_this<Connection>
 {
 public:
-    explicit Connection(boost::asio::ip::tcp::socket &&socket): ws(std::move(socket)) {}
+    explicit Connection(boost::asio::ip::tcp::socket &&socket): ws(std::move(socket)), timer(socket.get_executor()) {}
 
     ~Connection() = default;
 
@@ -71,7 +72,7 @@ public:
 
         if (ec) {
             fail(ec, "read");
-        }else {
+        } else {
             std::cout << boost::beast::make_printable(buffer.data()) << std::endl;
 
             // consume the data
@@ -106,6 +107,18 @@ public:
         }
     }
 
+    void cancelTimer()
+    {
+        boost::system::error_code ec;
+        timer.cancel(ec);
+    }
+
+    // 远程地址
+    void remote() {}
+
+    // 本地地址
+    void local() {}
+
     void close() { ws.close(boost::beast::websocket::close_code::normal); }
 
 private:
@@ -121,6 +134,7 @@ private:
     void callback() {}
 
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws;
+    boost::asio::steady_timer timer;
     boost::beast::flat_buffer buffer;
     std::queue<std::string> writeMsgs;
     std::mutex mtx;
