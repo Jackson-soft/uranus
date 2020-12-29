@@ -7,14 +7,14 @@
 #include <spdlog/spdlog.h>
 #include <string_view>
 
-namespace Uranus
+namespace uranus
 {
-class LogHelper
+class logHelper
 {
 public:
-    static auto instance() -> LogHelper &
+    static auto instance() -> logHelper &
     {
-        static LogHelper logger;
+        static logHelper logger;
         return logger;
     }
 
@@ -25,7 +25,7 @@ public:
     }
 
     template<typename... T>
-    void error(std::string_view fmt, const T &... args)
+    void error(std::string_view fmt, const T &...args)
     {
         log->error(fmt, args...);
     }
@@ -37,21 +37,21 @@ public:
     }
 
     template<typename... T>
-    void info(std::string_view fmt, const T &... args)
+    void info(std::string_view fmt, const T &...args)
     {
         log->info(fmt, args...);
     }
 
 private:
-    LogHelper()
+    logHelper()
     {
         log = spdlog::rotating_logger_mt("room", "logs/rotating.log", 1048576 * 5, 3);
         log->set_level(spdlog::level::info);
         spdlog::flush_every(std::chrono::seconds(5));
     }
 
-    ~LogHelper() { log->flush(); }
+    ~logHelper() { log->flush(); }
 
     std::shared_ptr<spdlog::logger> log;
 };
-}  // namespace Uranus
+}  // namespace uranus

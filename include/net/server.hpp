@@ -1,15 +1,14 @@
 #pragma once
 
-#include <boost/asio.hpp>
 #include <boost/system/error_code.hpp>
 #include <memory>
 #include <thread>
 
 #include "io_pool.hpp"
 
-namespace Uranus::Net
+namespace uranus::net
 {
-class Server: boost::asio::coroutine
+class server: boost::asio::coroutine
 {
 public:
     explicit Server(std::size_t size = std::thread::hardware_concurrency()): ioPool(size) {}
@@ -87,4 +86,4 @@ private:
     std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor;
     std::shared_ptr<boost::asio::ip::tcp::socket> socket;
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

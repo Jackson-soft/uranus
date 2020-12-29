@@ -1,7 +1,6 @@
 #pragma once
 
 #include <bits/c++config.h>
-#include <boost/asio.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/core/noncopyable.hpp>
 #include <list>
@@ -9,12 +8,12 @@
 #include <thread>
 #include <vector>
 
-namespace Uranus
+namespace uranus
 {
-class IOPool: public boost::noncopyable
+class ioPool: public boost::noncopyable
 {
 public:
-    explicit IOPool(std::size_t size = std::thread::hardware_concurrency())
+    explicit ioPool(std::size_t size = std::thread::hardware_concurrency())
     {
         ioContexts.reserve(size);
         for (std::size_t i = 0; i < size; i++) {
@@ -24,7 +23,7 @@ public:
         }
     }
 
-    ~IOPool() { stop(); }
+    ~ioPool() { stop(); }
 
     void run()
     {
@@ -65,4 +64,4 @@ private:
     std::list<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> works;
     std::size_t nextIOContext{0};
 };
-}  // namespace Uranus
+}  // namespace uranus
