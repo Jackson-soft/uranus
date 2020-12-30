@@ -14,22 +14,22 @@
 #include <vector>
 
 #include "connection.hpp"
-#include "io_pool.hpp"
-#include "log.hpp"
+#include "net/ioPool.hpp"
+#include "utils/log.hpp"
 
-namespace Uranus::WebSocket
+namespace uranus::net::websocket
 {
 using handler = std::function<void()>;
 
-class Server
+class server
 {
 public:
-    explicit Server(std::size_t size = std::thread::hardware_concurrency())
-        : ioPool(size), acceptor(ioPool.getIOContext())
+    explicit server(std::size_t size = std::thread::hardware_concurrency())
+        : iocPool(size), acceptor(iocPool.getIOContext())
     {
     }
 
-    ~Server() { stop(); }
+    ~server() { stop(); }
 
     auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {
@@ -79,12 +79,12 @@ public:
     void run()
     {
         doAccept();
-        ioPool.run();
+        iocPool.run();
     }
 
     void doAccept()
     {
-        acceptor.async_accept(ioPool.getIOContext(), boost::beast::bind_front_handler(&Server::onAccept, this));
+        acceptor.async_accept(iocPool.getIOContext(), boost::beast::bind_front_handler(&server::onAccept, this));
     }
 
     // Start accepting incoming connections
@@ -94,7 +94,7 @@ public:
             fail(ec, "accept");
         } else {
             // Create the session and run it
-            std::make_shared<Connection>(std::move(socket))->run();
+            std::make_shared<connection>(std::move(socket))->run();
         }
         doAccept();
     }
@@ -102,7 +102,7 @@ public:
     // 设置消息处理回调
     void setHandler() {}
 
-    void stop() { ioPool.stop(); }
+    void stop() { iocPool.stop(); }
 
 private:
     void fail(boost::system::error_code ec, char const *what)
@@ -110,10 +110,10 @@ private:
         if (ec == boost::asio::error::operation_aborted)
             return;
 
-        LogHelper::instance().error("{}:{}", what, ec.message());
+        utils::logHelper::instance().error("{}:{}", what, ec.message());
     }
 
-    IOPool ioPool;
+    ioPool iocPool;
     boost::asio::ip::tcp::acceptor acceptor;
 };
-}  // namespace Uranus::WebSocket
+}  // namespace uranus::net::websocket

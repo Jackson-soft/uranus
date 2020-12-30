@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <string_view>
 
-namespace uranus
+namespace uranus::utils
 {
 class logHelper
 {
@@ -54,4 +54,4 @@ private:
 
     std::shared_ptr<spdlog::logger> log;
 };
-}  // namespace uranus
+}  // namespace uranus::utils

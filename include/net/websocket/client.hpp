@@ -22,14 +22,14 @@
 
 #include "log.hpp"
 
-namespace Uranus::WebSocket
+namespace uranus::net::websocket
 {
-class Client
+class client
 {
 public:
-    explicit Client(): resolver(ioContext), ws(ioContext) {}
+    explicit client(): resolver(ioContext), ws(ioContext) {}
 
-    ~Client()
+    ~client()
     {
         resolver.cancel();
         close();
@@ -92,7 +92,7 @@ public:
     {
         writeMsgs.emplace(msg);
         ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                       boost::beast::bind_front_handler(&Client::doWrite, this));
+                       boost::beast::bind_front_handler(&client::doWrite, this));
     }
 
     void doWrite(boost::system::error_code ec, std::size_t)
@@ -104,14 +104,14 @@ public:
 
         if (!writeMsgs.empty()) {
             ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                           boost::beast::bind_front_handler(&Client::doWrite, this));
+                           boost::beast::bind_front_handler(&client::doWrite, this));
         }
     }
 
     void read()
     {
         // Read a message into our buffer
-        ws.async_read(buffer, boost::beast::bind_front_handler(&Client::onRead, this));
+        ws.async_read(buffer, boost::beast::bind_front_handler(&client::onRead, this));
     }
 
     void onRead(boost::system::error_code ec, std::size_t bytes_transferred)
@@ -139,4 +139,4 @@ private:
     boost::beast::multi_buffer buffer;
     std::queue<std::string> writeMsgs;
 };
-}  // namespace Uranus::WebSocket
+}  // namespace uranus::net::websocket

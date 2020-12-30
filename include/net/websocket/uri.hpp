@@ -17,13 +17,13 @@
 fragment
 
 */
-namespace Uranus::WebSocket
+namespace uranus::net::websocket
 {
-class URI
+class uri
 {
 public:
-    URI() noexcept = default;
-    ~URI()         = default;
+    uri() noexcept = default;
+    ~uri()         = default;
 
     auto parse(std::string_view rawurl) -> bool
     {
@@ -50,4 +50,4 @@ private:
     std::string query_;
     std::string fragment_;
 };
-}  // namespace Uranus::WebSocket
+}  // namespace uranus::net::websocket

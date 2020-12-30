@@ -5,20 +5,20 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Database
+namespace uranus::database
 {
 // PostgreSQL
-class Postgre
+class postgre
 {
 public:
-    Postgre()  = default;
-    ~Postgre() = default;
+    postgre()  = default;
+    ~postgre() = default;
 
     auto connect(std::string_view dsn) -> bool
     {
         if (dsn.empty())
             return false;
-        //conn = std::make_unique<pqxx::connection>(dsn);
+        // conn = std::make_unique<pqxx::connection>(dsn);
         return conn->is_open();
     }
 
@@ -26,9 +26,9 @@ public:
     {
         if (sql.empty())
             return;
-        //conn->prepare(sql);
+        // conn->prepare(sql);
         pqxx::work work{*conn};
-        //pqxx::result result = work.exec(sql);
+        // pqxx::result result = work.exec(sql);
         work.commit();
     }
 
@@ -42,4 +42,4 @@ public:
 private:
     std::unique_ptr<pqxx::connection> conn;
 };
-}  // namespace Uranus::Database
+}  // namespace uranus::database

@@ -2,14 +2,14 @@
 
 #include <mutex>
 
-namespace Uranus::Database
+namespace uranus::database
 {
-class Pool
+class pool
 {
 public:
-    static auto instance() -> Pool &
+    static auto instance() -> pool &
     {
-        static Pool instance;
+        static pool instance;
         return instance;
     }
 
@@ -24,4 +24,4 @@ private:
     std::mutex mtx;
     std::once_flag flag;
 };
-}  // namespace Uranus::Database
+}  // namespace uranus::database
