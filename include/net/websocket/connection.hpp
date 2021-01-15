@@ -1,9 +1,11 @@
 #pragma once
 
 #include <boost/asio/buffer.hpp>
-#include <boost/asio/dispatch.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/asio/use_awaitable.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/make_printable.hpp>
@@ -34,9 +36,15 @@ public:
 
     void run()
     {
+        /*
         boost::asio::dispatch(ws.get_executor(),
                               boost::beast::bind_front_handler(&connection::onRun, shared_from_this()));
+    */
+        boost::asio::co_spawn(
+            ws.get_executor(), [self = shared_from_this()] { return self->reader(); }, boost::asio::detached);
     }
+
+    boost::asio::awaitable<void> reader() {}
 
     void onRun()
     {

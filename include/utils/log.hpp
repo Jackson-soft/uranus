@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <memory>
-#include <spdlog/logger.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <string_view>
@@ -45,12 +44,13 @@ public:
 private:
     logHelper()
     {
-        log = spdlog::rotating_logger_mt("room", "logs/rotating.log", 1048576 * 5, 3);
+        log = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
         log->set_level(spdlog::level::info);
-        spdlog::flush_every(std::chrono::seconds(5));
+        log->flush_on(spdlog::level::info);
+        // log->set_pattern("[%Y-%m-%d %T.%e] [%@] [%!] [%l]: %v");
     }
 
-    ~logHelper() { log->flush(); }
+    ~logHelper() { spdlog::drop_all(); }
 
     std::shared_ptr<spdlog::logger> log;
 };

@@ -10,7 +10,7 @@ fi
 
 cmake -B$folder -H. -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 
-ninja -C $folder -j 6
+ninja -C $folder -j 4
 
 lnFile="compile_commands.json"
 
