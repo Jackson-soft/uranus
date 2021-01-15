@@ -1,6 +1,6 @@
 #pragma once
 
-namespace aquarius::rtp
+namespace uranus::rtp
 {
 class rtpSdp
 {
@@ -8,4 +8,4 @@ public:
     rtpSdp()  = default;
     ~rtpSdp() = default;
 };
-}  // namespace aquarius::rtp
+}  // namespace uranus::rtp

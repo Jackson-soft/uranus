@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace aquarius::rtp
+namespace uranus::rtp
 {
 // From RFC 3550, RTCP: A Transport Protocol for Real-Time Applications.
 //
@@ -24,4 +24,4 @@ private:
 
     std::uint32_t ssrc_;  // 32bit SR 包发送者的同步源标识符。
 };
-}  // namespace aquarius::rtp
+}  // namespace uranus::rtp

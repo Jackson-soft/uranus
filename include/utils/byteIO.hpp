@@ -3,9 +3,8 @@
 #include <cstddef>
 #include <vector>
 
-namespace aquarius::utils
+namespace uranus::utils
 {
-
 template<typename T>
 inline auto readByte(const std::vector<std::byte> &data) -> T
 {
@@ -31,4 +30,4 @@ inline auto writeByte(const T &data) -> std::vector<std::byte>
     return tmp;
 }
 
-}  // namespace aquarius::utils
+}  // namespace uranus::utils

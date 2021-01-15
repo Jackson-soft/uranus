@@ -12,7 +12,7 @@
 
 #include "spdlog/spdlog.h"
 
-namespace aquarius::rtp
+namespace uranus::rtp
 {
 // rtp 解包封包
 
@@ -148,4 +148,4 @@ private:
     std::vector<std::byte> payload_;  // 数据载荷
     std::uint16_t payloadLen_;
 };
-}  // namespace aquarius::rtp
+}  // namespace uranus::rtp

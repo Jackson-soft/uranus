@@ -1,6 +1,6 @@
 build/
 compile_commands.json
 .vscode/
-.clangd/
+.cache/
 cmake-build-debug/
 .idea/

@@ -23,7 +23,7 @@
 #include <string_view>
 #include <vector>
 
-namespace aquarius::rtp
+namespace uranus::rtp
 {
 class server
 {
@@ -70,4 +70,4 @@ private:
     std::array<std::byte, 2048> buffer_;
     aquarius::rtp::rtpPacket rtpParser_;
 };
-}  // namespace aquarius::rtp
+}  // namespace uranus::rtp

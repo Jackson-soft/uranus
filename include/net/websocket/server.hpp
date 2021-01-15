@@ -23,7 +23,7 @@ class server
 {
 public:
     explicit server(std::size_t size = std::thread::hardware_concurrency())
-        : iocPool(size), acceptor(iocPool.getIOContext())
+        : iocPool(size), acceptor_(iocPool.getIOContext())
     {
     }
 
@@ -44,30 +44,30 @@ public:
         boost::beast::error_code ec;
 
         // Open the acceptor
-        acceptor.open(endpoint.protocol(), ec);
+        acceptor_.open(endpoint.protocol(), ec);
         if (ec) {
             fail(ec, "open");
             return false;
         }
 
         // Allow address reuse
-        acceptor.set_option(boost::asio::socket_base::reuse_address(true), ec);
+        acceptor_.set_option(boost::asio::socket_base::reuse_address(true), ec);
         if (ec) {
             fail(ec, "set_option");
             return false;
         }
 
-        acceptor.non_blocking(true);
+        acceptor_.non_blocking(true);
 
         // Bind to the server address
-        acceptor.bind(endpoint, ec);
+        acceptor_.bind(endpoint, ec);
         if (ec) {
             fail(ec, "bind");
             return false;
         }
 
         // Start listening for connections
-        acceptor.listen(boost::asio::socket_base::max_listen_connections, ec);
+        acceptor_.listen(boost::asio::socket_base::max_listen_connections, ec);
         if (ec) {
             fail(ec, "listen");
             return false;
@@ -78,7 +78,7 @@ public:
 
     void run()
     {
-        boost::asio::co_spawn(acceptor_.get_executor(), doAccept(), boost::asio::detached);
+        boost::asio::co_spawn(acceptor_.get_executor(), onAccept(), boost::asio::detached);
         iocPool.run();
     }
 
@@ -99,7 +99,7 @@ private:
     auto onAccept() -> boost::asio::awaitable<void>
     {
         while (true) {
-            auto socket = co_await acceptor.async_accept(boost::asio::use_awaitable);
+            auto socket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
             auto conn = std::make_shared<connection>(std::move(socket));
             conn->run();
@@ -107,6 +107,6 @@ private:
     }
 
     ioPool iocPool{};
-    boost::asio::ip::tcp::acceptor acceptor;
+    boost::asio::ip::tcp::acceptor acceptor_;
 };
 }  // namespace uranus::net::websocket
