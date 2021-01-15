@@ -1,18 +1,14 @@
 #pragma once
 
+#include <boost/asio/awaitable.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/detached.hpp>
-#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/redirect_error.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/beast/core.hpp>
-#include <boost/beast/core/flat_buffer.hpp>
-#include <boost/beast/core/make_printable.hpp>
 #include <boost/beast/websocket.hpp>
-#include <boost/beast/websocket/error.hpp>
-#include <boost/beast/websocket/rfc6455.hpp>
-#include <boost/system/error_code.hpp>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -30,23 +26,14 @@ namespace uranus::net::websocket
 class connection: public std::enable_shared_from_this<connection>
 {
 public:
-    explicit connection(boost::asio::ip::tcp::socket &&socket): ws(std::move(socket)), timer(socket.get_executor()) {}
+    explicit connection(boost::asio::ip::tcp::socket &&socket): ws(std::move(socket)), timer(socket.get_executor())
+    {
+        timer_.expires_at(std::chrono::steady_clock::time_point::max());
+    }
 
     ~connection() = default;
 
     void run()
-    {
-        /*
-        boost::asio::dispatch(ws.get_executor(),
-                              boost::beast::bind_front_handler(&connection::onRun, shared_from_this()));
-    */
-        boost::asio::co_spawn(
-            ws.get_executor(), [self = shared_from_this()] { return self->reader(); }, boost::asio::detached);
-    }
-
-    boost::asio::awaitable<void> reader() {}
-
-    void onRun()
     {
         // Set suggested timeout settings for the websocket
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::server));
@@ -58,16 +45,8 @@ public:
         }));
 
         // Accept the websocket handshake
-        ws.async_accept(boost::beast::bind_front_handler(&connection::onAccept, shared_from_this()));
-    }
-
-    void onAccept(boost::system::error_code ec)
-    {
-        if (ec)
-            return fail(ec, "accept");
-
-        // Read a message into our buffer
-        ws.async_read(buffer, boost::beast::bind_front_handler(&connection::onRead, shared_from_this()));
+        boost::asio::co_spawn(
+            ws_.get_executor(), [self = shared_from_this()] { return self->acceptor(); }, boost::asio::detached);
     }
 
     void onRead(boost::beast::error_code ec, std::size_t bytes_transferred)
@@ -91,43 +70,13 @@ public:
         }
     }
 
-    void write(std::string_view text)
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        writeMsgs.emplace(text);
-        ws.text(ws.got_text());
-        ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                       boost::beast::bind_front_handler(&connection::doWrite, shared_from_this()));
-    }
-
-    void doWrite(boost::system::error_code ec, std::size_t bytes_transferred)
-    {
-        boost::ignore_unused(bytes_transferred);
-
-        if (ec)
-            return fail(ec, "write");
-        writeMsgs.pop();
-
-        if (!writeMsgs.empty()) {
-            ws.text(ws.got_text());
-            ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                           boost::beast::bind_front_handler(&connection::doWrite, shared_from_this()));
-        }
-    }
-
-    void cancelTimer()
-    {
-        boost::system::error_code ec;
-        timer.cancel(ec);
-    }
-
     // 远程地址
     void remote() {}
 
     // 本地地址
     void local() {}
 
-    void close() { ws.close(boost::beast::websocket::close_code::normal); }
+    void close() { ws_.close(boost::beast::websocket::close_code::normal); }
 
 private:
     // Report a failure
@@ -136,15 +85,39 @@ private:
         if (ec == boost::asio::error::operation_aborted || ec == boost::beast::websocket::error::closed)
             return;
 
-        utils::logHelper::instance().error("{}:{}", what, ec.message());
+        // utils::logHelper::instance().error("{}:{}", what, ec.message());
+    }
+
+    auto acceptor() -> boost::asio::awaitable<void>
+    {
+        co_await ws_.async_accept(boost::asio::use_awaitable);
+
+        while (true) {
+            auto bytes = co_await ws_.async_read(buffer_, boost::asio::use_awaitable);
+            if (bytes > 0) {
+                auto message = boost::beast::buffers_to_string(buffer_.data());
+
+                uranus::utils::logHelper::instance().info("read bytes: {}, message: {}", bytes, message);
+
+                onMessage(message.data());
+
+                buffer_.consume(message.size());
+            }
+
+            if (!responses_.empty()) {
+                ws_.text(ws_.got_text());
+                co_await ws_.async_write(boost::asio::buffer(responses_.front()), boost::asio::use_awaitable);
+                responses_.pop();
+            }
+        }
     }
 
     void callback() {}
 
-    boost::beast::websocket::stream<boost::beast::tcp_stream> ws;
-    boost::asio::steady_timer timer;
-    boost::beast::flat_buffer buffer;
-    std::queue<std::string> writeMsgs;
-    std::mutex mtx;
+    boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
+    boost::asio::steady_timer timer_;
+    boost::beast::flat_buffer buffer_;
+    std::queue<std::string> writeMsgs_;
+    std::mutex mtx_;
 };
 }  // namespace uranus::net::websocket

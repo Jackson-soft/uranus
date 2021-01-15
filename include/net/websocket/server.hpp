@@ -1,10 +1,10 @@
 #pragma once
 
-#include <boost/asio/dispatch.hpp>
+#include <boost/asio/awaitable.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/system/error_code.hpp>
+#include <boost/asio/use_awaitable.hpp>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -19,8 +19,6 @@
 
 namespace uranus::net::websocket
 {
-using handler = std::function<void()>;
-
 class server
 {
 public:
@@ -59,6 +57,8 @@ public:
             return false;
         }
 
+        acceptor.non_blocking(true);
+
         // Bind to the server address
         acceptor.bind(endpoint, ec);
         if (ec) {
@@ -78,25 +78,8 @@ public:
 
     void run()
     {
-        doAccept();
+        boost::asio::co_spawn(acceptor_.get_executor(), doAccept(), boost::asio::detached);
         iocPool.run();
-    }
-
-    void doAccept()
-    {
-        acceptor.async_accept(iocPool.getIOContext(), boost::beast::bind_front_handler(&server::onAccept, this));
-    }
-
-    // Start accepting incoming connections
-    void onAccept(boost::beast::error_code ec, boost::asio::ip::tcp::socket socket)
-    {
-        if (ec) {
-            fail(ec, "accept");
-        } else {
-            // Create the session and run it
-            std::make_shared<connection>(std::move(socket))->run();
-        }
-        doAccept();
     }
 
     // 设置消息处理回调
@@ -110,10 +93,20 @@ private:
         if (ec == boost::asio::error::operation_aborted)
             return;
 
-        utils::logHelper::instance().error("{}:{}", what, ec.message());
+        // utils::logHelper::instance().error("{}:{}", what, ec.message());
     }
 
-    ioPool iocPool;
+    auto onAccept() -> boost::asio::awaitable<void>
+    {
+        while (true) {
+            auto socket = co_await acceptor.async_accept(boost::asio::use_awaitable);
+            // auto ep     = socket.remote_endpoint();
+            auto conn = std::make_shared<connection>(std::move(socket));
+            conn->run();
+        }
+    }
+
+    ioPool iocPool{};
     boost::asio::ip::tcp::acceptor acceptor;
 };
 }  // namespace uranus::net::websocket
