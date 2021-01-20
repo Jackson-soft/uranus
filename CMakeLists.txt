@@ -5,7 +5,7 @@ project(uranus LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 启用无栈协程，须 gcc 10以上
-set(CMAKE_CXX_FLAGS "-fcoroutines")
+set(CMAKE_CXX_FLAGS "-fcoroutines-ts")
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR})
 
@@ -28,8 +28,7 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
   ${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES}
                           ${spdlog_INCLUDES} ${yaml-cpp_INCLUDES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES} FFmpeg::FFmpeg
-                                              spdlog::spdlog yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES} FFmpeg::FFmpeg)
 
 set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)

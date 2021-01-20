@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-namespace uranus::net
+namespace uranus
 {
 class ioPool: public boost::noncopyable
 {
@@ -22,7 +22,7 @@ public:
             auto ioContext = std::make_shared<boost::asio::io_context>();
             ioContexts_.emplace_back(ioContext);
             works_.emplace_back(
-                boost::asio::require(ioContext->get_executor(), boost::asio::execution::outstanding_work.tracked));
+                boost::asio::require(ioContext->get_executor(), boost::asio::execution::outstanding_work_t::tracked));
         }
     }
 
@@ -67,4 +67,4 @@ private:
     std::list<boost::asio::any_io_executor> works_;
     std::uint32_t next_{0};
 };
-}  // namespace uranus::net
+}  // namespace uranus

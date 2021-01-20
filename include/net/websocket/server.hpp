@@ -17,7 +17,7 @@
 #include "net/ioPool.hpp"
 #include "utils/log.hpp"
 
-namespace uranus::net::websocket
+namespace uranus::websocket
 {
 class server
 {
@@ -109,4 +109,4 @@ private:
     ioPool iocPool{};
     boost::asio::ip::tcp::acceptor acceptor_;
 };
-}  // namespace uranus::net::websocket
+}  // namespace uranus::websocket

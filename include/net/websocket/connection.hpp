@@ -21,7 +21,7 @@
 #include "utils/log.hpp"
 
 //
-namespace uranus::net::websocket
+namespace uranus::websocket
 {
 class connection: public std::enable_shared_from_this<connection>
 {
@@ -31,7 +31,7 @@ public:
         timer_.expires_at(std::chrono::steady_clock::time_point::max());
     }
 
-    ~connection() = default;
+    ~connection() { close(); }
 
     void run()
     {
@@ -99,4 +99,4 @@ private:
     std::queue<std::string> responses_;
     std::mutex mtx_;
 };
-}  // namespace uranus::net::websocket
+}  // namespace uranus::websocket

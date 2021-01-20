@@ -17,7 +17,7 @@
 fragment
 
 */
-namespace uranus::net::websocket
+namespace uranus::websocket
 {
 class uri
 {
@@ -50,4 +50,4 @@ private:
     std::string query_;
     std::string fragment_;
 };
-}  // namespace uranus::net::websocket
+}  // namespace uranus::websocket

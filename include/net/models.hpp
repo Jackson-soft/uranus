@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace uranus::net
+namespace uranus
 {
 class returned
 {
@@ -27,4 +27,4 @@ returned tag_invoke(boost::json::value_to_tag<returned>, boost::json::value cons
     auto &jo = jv.as_object();
     return returned(jo.at("code").as_uint64(), jo.at("message").as_string().data(), jo.at("data").as_string().data());
 }
-}  // namespace uranus::net
+}  // namespace uranus

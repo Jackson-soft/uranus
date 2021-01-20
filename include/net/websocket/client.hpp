@@ -1,6 +1,5 @@
 #pragma once
 
-#include <bits/c++config.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/io_context.hpp>
@@ -20,18 +19,18 @@
 #include <string>
 #include <string_view>
 
-#include "log.hpp"
+#include "utils/log.hpp"
 
-namespace uranus::net::websocket
+namespace uranus::websocket
 {
 class client
 {
 public:
-    explicit client(): resolver(ioContext), ws(ioContext) {}
+    explicit client(): resolver_(ioContext), ws_(ioContext) {}
 
     ~client()
     {
-        resolver.cancel();
+        resolver_.cancel();
         close();
     }
 
@@ -49,23 +48,23 @@ public:
             return false;
 
         // Look up the domain name
-        auto const results = resolver.resolve(host, port);
+        auto const results = resolver_.resolve(host, port);
 
         // Set a timeout on the operation
-        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        boost::beast::get_lowest_layer(ws_).expires_after(std::chrono::seconds(30));
 
         // Make the connection on the IP address we get from a lookup
-        auto ep = boost::beast::get_lowest_layer(ws).connect(results);
+        auto ep = boost::beast::get_lowest_layer(ws_).connect(results);
 
         // Turn off the timeout on the tcp_stream, because
         // the websocket stream has its own timeout system.
-        boost::beast::get_lowest_layer(ws).expires_never();
+        boost::beast::get_lowest_layer(ws_).expires_never();
 
         // Set suggested timeout settings for the websocket
-        ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
+        ws_.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
 
         // Set a decorator to change the User-Agent of the handshake
-        ws.set_option(boost::beast::websocket::stream_base::decorator([](boost::beast::websocket::request_type &req) {
+        ws_.set_option(boost::beast::websocket::stream_base::decorator([](boost::beast::websocket::request_type &req) {
             req.set(boost::beast::http::field::user_agent,
                     std::string(BOOST_BEAST_VERSION_STRING) + " websocket-client-coro");
         }));
@@ -74,7 +73,7 @@ public:
         address += ':' + std::to_string(ep.port());
 
         // Perform the websocket handshake
-        ws.handshake(address, path.data());
+        ws_.handshake(address, path.data());
 
         return true;
     }
@@ -90,9 +89,9 @@ public:
 
     void onWrite(std::string_view msg)
     {
-        writeMsgs.emplace(msg);
-        ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                       boost::beast::bind_front_handler(&client::doWrite, this));
+        responses_.emplace(msg);
+        ws_.async_write(boost::asio::buffer(responses_.front()),
+                        boost::beast::bind_front_handler(&client::doWrite, this));
     }
 
     void doWrite(boost::system::error_code ec, std::size_t)
@@ -100,18 +99,18 @@ public:
         if (ec)
             return fail(ec, "write");
 
-        writeMsgs.pop();
+        responses_.pop();
 
-        if (!writeMsgs.empty()) {
-            ws.async_write(boost::asio::buffer(writeMsgs.front()),
-                           boost::beast::bind_front_handler(&client::doWrite, this));
+        if (!responses_.empty()) {
+            ws_.async_write(boost::asio::buffer(responses_.front()),
+                            boost::beast::bind_front_handler(&client::doWrite, this));
         }
     }
 
     void read()
     {
         // Read a message into our buffer
-        ws.async_read(buffer, boost::beast::bind_front_handler(&client::onRead, this));
+        ws_.async_read(buffer_, boost::beast::bind_front_handler(&client::onRead, this));
     }
 
     void onRead(boost::system::error_code ec, std::size_t bytes_transferred)
@@ -121,22 +120,22 @@ public:
         if (ec)
             return fail(ec, "read");
 
-        buffer.consume(bytes_transferred);
+        buffer_.consume(bytes_transferred);
     }
 
-    void close() { ws.close(boost::beast::websocket::close_code::normal); }
+    void close() { ws_.close(boost::beast::websocket::close_code::normal); }
 
 private:
     void fail(boost::system::error_code ec, std::string_view what)
     {
-        LogHelper::instance().error("{}:{}", what, ec.message());
+        uranus::utils::logHelper::instance().error("{}:{}", what, ec.message());
     }
 
     boost::asio::io_context ioContext;
-    boost::asio::ip::tcp::resolver resolver;
-    boost::beast::websocket::stream<boost::beast::tcp_stream> ws;
+    boost::asio::ip::tcp::resolver resolver_;
+    boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
 
-    boost::beast::multi_buffer buffer;
-    std::queue<std::string> writeMsgs;
+    boost::beast::multi_buffer buffer_;
+    std::queue<std::string> responses_;
 };
-}  // namespace uranus::net::websocket
+}  // namespace uranus::websocket

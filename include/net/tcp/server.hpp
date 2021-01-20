@@ -6,27 +6,31 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/system/error_code.hpp>
+#include <cstdint>
+#include <iostream>
 #include <memory>
 #include <thread>
 
+#include "boost/asio/co_spawn.hpp"
+#include "boost/asio/detached.hpp"
 #include "net/ioPool.hpp"
+#include "net/tcp/connection.hpp"
 
-namespace uranus::net
+namespace uranus::tcp
 {
 class server
 {
 public:
-    explicit server(std::size_t size = std::thread::hardware_concurrency()): iocPool_(size) {}
+    explicit server(std::uint32_t size = std::thread::hardware_concurrency()): iocPool_(size) {}
 
     ~server() { iocPool_.stop(); }
 
-    auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
+    auto listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {
         if (port <= 0)
             return false;
 
-        auto address = boost::asio::ip::make_address(host);
-        auto ep      = boost::asio::ip::tcp::endpoint(address, port);
+        auto ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
         return listen(ep);
     }
 
@@ -64,15 +68,26 @@ public:
         return true;
     }
 
-    void run() { iocPool_.run(); }
+    void run()
+    {
+        boost::asio::co_spawn(acceptor_->get_executor(), doAccept(), boost::asio::detached);
+        iocPool_.run();
+    }
 
 private:
     void fail(boost::system::error_code ec, char const *what) { std::cerr << what << ": " << ec.message() << "\n"; }
 
-    void doAccept() {}
+    auto doAccept() -> boost::asio::awaitable<void>
+    {
+        while (true) {
+            auto socket = co_await acceptor_->async_accept(boost::asio::use_awaitable);
+            // auto ep     = socket.remote_endpoint();
+            auto conn = std::make_shared<connection>(std::move(socket));
+            conn->run();
+        }
+    }
 
-    ioPool iocPool_;
+    uranus::ioPool iocPool_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_{};
-    std::shared_ptr<boost::asio::ip::tcp::socket> socket{};
 };
-}  // namespace uranus::net
+}  // namespace uranus::tcp
