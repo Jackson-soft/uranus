@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <thread>
 
 #include "boost/asio/co_spawn.hpp"
@@ -75,7 +76,10 @@ public:
     }
 
 private:
-    void fail(boost::system::error_code ec, char const *what) { std::cerr << what << ": " << ec.message() << "\n"; }
+    void fail(boost::system::error_code ec, std::string_view what)
+    {
+        std::cerr << what << ": " << ec.message() << "\n";
+    }
 
     auto doAccept() -> boost::asio::awaitable<void>
     {

@@ -5,7 +5,7 @@ dir="build"
 
 if [ -d $dir ]; then
     #ninja -C $dir -j 4
-    cmake --build $dir --config Release -j 6
+    cmake --build $dir --config Release -j 4
     exit 0
 fi
 
@@ -17,7 +17,7 @@ conan install .. --build missing
 
 cmake -S .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_BUILD_TYPE=Release
 
-cmake --build . --config Release -j 6
+cmake --build . --config Release -j 4
 
 lnFile="compile_commands.json"
 
