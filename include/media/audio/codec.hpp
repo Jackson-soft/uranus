@@ -16,17 +16,11 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-namespace uranus::media::codec
+namespace uranus::audio
 {
-// 音频编解码器，目前是支持opus
-// 解码前数据：AVPacket
-// 解码后数据：AVFrame
-class audio
+// 音频编解码器
+class Codec
 {
-public:
-    audio()  = default;
-    ~audio() = default;
-
     void create() { AVFrame *frame = av_frame_alloc(); }
 
     void encode() {}
@@ -58,4 +52,4 @@ public:
         }
     }
 };
-}  // namespace uranus::media::codec
+}  // namespace uranus::audio

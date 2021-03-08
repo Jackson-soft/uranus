@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavfilter/buffersink.h>
@@ -13,15 +10,12 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-namespace uranus::media::mixer
+namespace uranus::audio
 {
-// 音频混音器
-class audio
+// 音频合流器
+class Mixer
 {
 public:
-    audio()  = default;
-    ~audio() = default;
-
     auto create() -> bool { return true; }
 
     auto addSource() -> bool { return true; }
@@ -78,4 +72,4 @@ private:
 
     std::vector<AVFilterContext *> srcs_;
 };
-}  // namespace uranus::media::mixer
+}  // namespace uranus::audio

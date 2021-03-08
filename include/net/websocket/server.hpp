@@ -106,7 +106,7 @@ private:
         }
     }
 
-    ioPool iocPool{};
+    ioPool iocPool_{};
     boost::asio::ip::tcp::acceptor acceptor_;
 };
 }  // namespace uranus::websocket
