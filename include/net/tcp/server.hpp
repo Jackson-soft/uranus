@@ -22,7 +22,10 @@ namespace uranus::tcp
 class Server
 {
 public:
-    explicit Server(std::uint32_t size = std::thread::hardware_concurrency()): iocPool_(size) {}
+    explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
+        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIOContext()))
+    {
+    }
 
     ~Server() { iocPool_.stop(); }
 
@@ -78,7 +81,7 @@ public:
 private:
     void fail(boost::system::error_code ec, std::string_view what)
     {
-        std::cerr << what << ": " << ec.message() << "\n";
+        std::cerr << what << ": " << ec.message() << std::endl;
     }
 
     auto doAccept() -> boost::asio::awaitable<void>
@@ -92,6 +95,6 @@ private:
     }
 
     uranus::net::IoPool iocPool_;
-    std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_{};
+    std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_;
 };
 }  // namespace uranus::tcp

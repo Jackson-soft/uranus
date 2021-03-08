@@ -7,6 +7,9 @@
 #include <string>
 #include <string_view>
 
+#include <iostream>
+#include <system_error>
+
 namespace uranus::database
 {
 // Data Source Name
@@ -27,19 +30,19 @@ public:
         std::size_t driver = url.find_first_of("://");
         driver_            = url.substr(0, driver);
 
-        std::size_t info = url.find_last_of("@");
+        std::size_t info = url.find_last_of('@');
         auto infoStr     = url.substr(driver + 3, info - driver - 3);
-        std::size_t user = infoStr.find_first_of(":");
+        std::size_t user = infoStr.find_first_of(':');
         user_            = infoStr.substr(0, user);
         password_        = infoStr.substr(user + 1);
 
-        std::size_t address = url.find_last_of("?");
+        std::size_t address = url.find_last_of('?');
         auto addrStr        = url.substr(info + 1, address - info - 1);
-        std::size_t host    = addrStr.find_last_of(":");
+        std::size_t host    = addrStr.find_last_of(':');
         host_               = addrStr.substr(0, host);
-        std::size_t port    = addrStr.find_last_of("/");
+        std::size_t port    = addrStr.find_last_of('/');
         auto portStr        = addrStr.substr(host + 1, port - host - 1);
-        if (auto [p, ec] = std::from_chars(portStr.begin(), portStr.end(), port_); ec == std::errc()) {
+        if (auto [ptr, ec] = std::from_chars(portStr.begin(), portStr.end(), port_); ptr != portStr.end()) {
             return false;
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/dsn.hpp"
+#include <cstdint>
 #include <doctest/doctest.h>
 
 #include <iostream>
@@ -10,8 +11,7 @@ TEST_CASE("dsn parse")
     auto str{"postgres://bob:secret@1.2.3.4:5432/mydb?sslmode=verify-full"};
     uranus::database::DSN dsn;
 
-    dsn.parse(str);
-    std::cout << dsn.driver() << std::endl;
+    CHECK(dsn.parse(str));
 
     CHECK_EQ(dsn.driver(), "postgres");
     CHECK_EQ(dsn.user(), "bob");
