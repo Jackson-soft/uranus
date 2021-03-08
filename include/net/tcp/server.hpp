@@ -19,12 +19,12 @@
 
 namespace uranus::tcp
 {
-class server
+class Server
 {
 public:
-    explicit server(std::uint32_t size = std::thread::hardware_concurrency()): iocPool_(size) {}
+    explicit Server(std::uint32_t size = std::thread::hardware_concurrency()): iocPool_(size) {}
 
-    ~server() { iocPool_.stop(); }
+    ~Server() { iocPool_.stop(); }
 
     auto listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {

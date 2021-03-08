@@ -4,7 +4,7 @@
 
 auto main() -> int
 {
-    uranus::tcp::server svr;
+    uranus::tcp::Server svr;
     svr.listen(9090);
     svr.run();
 
