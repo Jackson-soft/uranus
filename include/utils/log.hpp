@@ -8,12 +8,12 @@
 
 namespace uranus::utils
 {
-class logHelper
+class LogHelper
 {
 public:
-    static auto instance() -> logHelper &
+    static auto get() -> LogHelper &
     {
-        static logHelper logger;
+        static LogHelper logger;
         return logger;
     }
 
@@ -42,7 +42,7 @@ public:
     }
 
 private:
-    logHelper()
+    LogHelper()
     {
         log = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
         log->set_level(spdlog::level::info);
@@ -50,7 +50,7 @@ private:
         // log->set_pattern("[%Y-%m-%d %T.%e] [%@] [%!] [%l]: %v");
     }
 
-    ~logHelper() { spdlog::drop_all(); }
+    ~LogHelper() { spdlog::drop_all(); }
 
     std::shared_ptr<spdlog::logger> log;
 };

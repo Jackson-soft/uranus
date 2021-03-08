@@ -23,15 +23,15 @@
 //
 namespace uranus::websocket
 {
-class connection: public std::enable_shared_from_this<connection>
+class Connection: public std::enable_shared_from_this<Connection>
 {
 public:
-    explicit connection(boost::asio::ip::tcp::socket &&socket): ws_(std::move(socket)), timer_(socket.get_executor())
+    explicit Connection(boost::asio::ip::tcp::socket &&socket): ws_(std::move(socket)), timer_(socket.get_executor())
     {
         timer_.expires_at(std::chrono::steady_clock::time_point::max());
     }
 
-    ~connection() { close(); }
+    ~Connection() { close(); }
 
     void run()
     {
@@ -76,7 +76,7 @@ private:
             if (bytes > 0) {
                 auto message = boost::beast::buffers_to_string(buffer_.data());
 
-                uranus::utils::logHelper::instance().info("read bytes: {}, message: {}", bytes, message);
+                uranus::utils::LogHelper::get().info("read bytes: {}, message: {}", bytes, message);
 
                 // onMessage(message.data());
 

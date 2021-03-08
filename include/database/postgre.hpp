@@ -8,38 +8,38 @@
 namespace uranus::database
 {
 // PostgreSQL
-class postgre
+class Postgre
 {
 public:
-    postgre()  = default;
-    ~postgre() = default;
+    Postgre()  = default;
+    ~Postgre() = default;
 
     auto connect(std::string_view dsn) -> bool
     {
         if (dsn.empty())
             return false;
-        // conn = std::make_unique<pqxx::connection>(dsn);
-        return conn->is_open();
+        // conn_ = std::make_unique<pqxx::connection>(dsn);
+        return conn_->is_open();
     }
 
     void insert(const std::string &sql)
     {
         if (sql.empty())
             return;
-        // conn->prepare(sql);
-        pqxx::work work{*conn};
+        // conn_->prepare(sql);
+        pqxx::work work{*conn_};
         // pqxx::result result = work.exec(sql);
         work.commit();
     }
 
     void close()
     {
-        if (conn->is_open()) {
-            conn->disconnect();
+        if (conn_->is_open()) {
+            conn_->disconnect();
         }
     }
 
 private:
-    std::unique_ptr<pqxx::connection> conn;
+    std::unique_ptr<pqxx::connection> conn_;
 };
 }  // namespace uranus::database

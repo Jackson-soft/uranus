@@ -4,12 +4,12 @@
 
 namespace uranus::database
 {
-class pool
+class Pool
 {
 public:
-    static auto instance() -> pool &
+    static auto get() -> Pool &
     {
-        static pool instance;
+        static Pool instance;
         return instance;
     }
 
@@ -21,7 +21,7 @@ public:
 private:
     void create() {}
 
-    std::mutex mtx;
-    std::once_flag flag;
+    std::mutex mutex_;
+    std::once_flag flag_;
 };
 }  // namespace uranus::database

@@ -25,16 +25,16 @@
 //
 namespace uranus::tcp
 {
-class connection: public std::enable_shared_from_this<connection>
+class Connection: public std::enable_shared_from_this<Connection>
 {
 public:
-    explicit connection(boost::asio::ip::tcp::socket &&socket)
+    explicit Connection(boost::asio::ip::tcp::socket &&socket)
         : socket_(std::move(socket)), timer_(socket_.get_executor())
     {
         timer_.expires_at(std::chrono::steady_clock::time_point::max());
     }
 
-    ~connection() = default;
+    ~Connection() = default;
 
     void run()
     {

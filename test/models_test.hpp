@@ -6,13 +6,13 @@
 
 TEST_CASE("client parse")
 {
-    uranus::Return cm{1, "2", "3"};
+    uranus::net::Return cm{1, "2", "3"};
     auto v = boost::json::value_from(cm);
-    std::cout << v.as_object().at("cmd").as_string() << std::endl;
+    std::cout << v.as_object().at("code").as_uint64()  << std::endl;
 
     std::cout << boost::json::serialize(v) << std::endl;
 
-    boost::json::value vj{{"cmd", "1"}, {"roomid", "2"}, {"clientid", "3"}, {"msg", "4"}};
-    auto myobj = boost::json::value_to<uranus::Return>(vj);
+    boost::json::value vj{{"code", std::uint64_t(1)}, {"message", "2"}, {"data", "3"}};
+    auto myobj = boost::json::value_to<uranus::net::Return>(vj);
     std::cout << myobj.code << std::endl;
 }

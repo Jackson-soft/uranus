@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/byteIO.hpp"
+#include "utils/byte_io.hpp"
 #include "utils/log.hpp"
 #include <algorithm>
 #include <bits/c++config.h>
@@ -47,11 +47,11 @@ constexpr std::size_t kOneByteExtensionHeaderLength = 1;
 constexpr std::size_t kTwoByteExtensionHeaderLength = 2;
 constexpr std::size_t kDefaultPacketSize            = 1500;
 
-class rtpPacket
+class RtpPacket
 {
 public:
-    rtpPacket()  = default;
-    ~rtpPacket() = default;
+    RtpPacket()  = default;
+    ~RtpPacket() = default;
 
     // 解包
     auto unpack(std::vector<std::byte> &&data) -> bool { return parse(std::move(data)); }

@@ -6,7 +6,6 @@
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/udp.hpp>
 //#include <boost/asio/steady_timer.hpp>
-#include "packet.hpp"
 #include "utils/log.hpp"
 #include <algorithm>
 #include <boost/asio/awaitable.hpp>
@@ -23,7 +22,7 @@
 #include <string_view>
 #include <vector>
 
-namespace uranus::rtp
+namespace uranus::udp
 {
 class Server
 {
@@ -59,8 +58,7 @@ private:
             std::copy_n(buffer_.begin(), bytes, std::back_inserter(tmp));
             uranus::utils::logHelper::instance().info("receive data bytes: {}, data size: {}", bytes, tmp.size());
 
-            rtpParser_.unpack(std::move(tmp));
-
+            
             // co_await socket_.async_send_to(boost::asio::buffer(buffer_, bytes), remote_, boost::asio::use_awaitable);
         }
     }
@@ -68,6 +66,5 @@ private:
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;
     boost::asio::ip::udp::endpoint remote_;
     std::array<std::byte, 2048> buffer_;
-    uranus::rtp::RtpPacket rtpParser_;
 };
-}  // namespace uranus::rtp
+}  // namespace uranus::udp

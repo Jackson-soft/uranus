@@ -2,10 +2,10 @@
 
 namespace uranus::rtp
 {
-class rtpSdp
+class RtpSdp
 {
 public:
-    rtpSdp()  = default;
-    ~rtpSdp() = default;
+    RtpSdp()  = default;
+    ~RtpSdp() = default;
 };
 }  // namespace uranus::rtp

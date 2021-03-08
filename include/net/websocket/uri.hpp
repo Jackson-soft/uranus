@@ -19,11 +19,11 @@ fragment
 */
 namespace uranus::websocket
 {
-class uri
+class URL
 {
 public:
-    uri() noexcept = default;
-    ~uri()         = default;
+    URL() noexcept = default;
+    ~URL()         = default;
 
     auto parse(std::string_view rawurl) -> bool
     {
@@ -32,7 +32,7 @@ public:
         return false;
     }
 
-    auto hostname() -> std::string const & { return host; }
+    auto hostname() -> std::string const & { return host_; }
 
     auto port() -> std::uint16_t { return port_; }
 
@@ -40,11 +40,11 @@ public:
 
     auto query() -> std::string const & { return query_; }
 
-    auto isAbs() -> bool { return !scheme.empty(); }
+    auto isAbs() -> bool { return !scheme_.empty(); }
 
 private:
-    std::string scheme;
-    std::string host;
+    std::string scheme_;
+    std::string host_;
     std::uint16_t port_;
     std::string path_{"/"};
     std::string query_;

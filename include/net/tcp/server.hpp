@@ -14,7 +14,7 @@
 
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/detached.hpp"
-#include "net/ioPool.hpp"
+#include "net/io_pool.hpp"
 #include "net/tcp/connection.hpp"
 
 namespace uranus::tcp
@@ -86,12 +86,12 @@ private:
         while (true) {
             auto socket = co_await acceptor_->async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
-            auto conn = std::make_shared<connection>(std::move(socket));
+            auto conn = std::make_shared<uranus::tcp::Connection>(std::move(socket));
             conn->run();
         }
     }
 
-    uranus::ioPool iocPool_;
+    uranus::net::IoPool iocPool_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_{};
 };
 }  // namespace uranus::tcp

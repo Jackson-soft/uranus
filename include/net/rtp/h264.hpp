@@ -2,7 +2,7 @@
 
 namespace uranus::rtp
 {
-class h264
+class H264
 {
 private:
     /**

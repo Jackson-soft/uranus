@@ -12,8 +12,12 @@ namespace uranus::rtp
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |V=2|P| RC/FMT  |     PT=SR=200       |         length          |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-class rtcp
+class Rtcp
 {
+public:
+    Rtcp()  = default;
+    ~Rtcp() = default;
+
 private:
     std::uint16_t version_ : 2;  // 2bit 版本号
     std::uint16_t padding_ : 1;  // 1bit 若设置填充比特，该 RTCP 包在末端包含一些附加填充比特，并不是控制信息的基本部分
