@@ -10,12 +10,12 @@
 #include <thread>
 #include <vector>
 
-namespace uranus
+namespace uranus::net
 {
-class ioPool: public boost::noncopyable
+class IoPool: public boost::noncopyable
 {
 public:
-    explicit ioPool(std::uint32_t size = std::thread::hardware_concurrency())
+    explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency())
     {
         ioContexts_.reserve(size);
         for (std::uint32_t i = 0; i < size; i++) {
@@ -26,7 +26,7 @@ public:
         }
     }
 
-    ~ioPool() { stop(); }
+    ~IoPool() { stop(); }
 
     void run()
     {
@@ -67,4 +67,4 @@ private:
     std::list<boost::asio::any_io_executor> works_;
     std::uint32_t next_{0};
 };
-}  // namespace uranus
+}  // namespace uranus::net
