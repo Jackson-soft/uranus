@@ -7,9 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include <iostream>
-#include <system_error>
-
 namespace uranus::database
 {
 // Data Source Name

@@ -5,7 +5,7 @@ project(uranus LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 启用无栈协程，须 gcc 10以上
-set(CMAKE_CXX_FLAGS "-fcoroutines-ts")
+set(CMAKE_CXX_FLAGS "-fcoroutines")
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR})
 

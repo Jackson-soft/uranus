@@ -73,7 +73,9 @@ private:
             for (std::string responses_;;) {
                 auto bytes = co_await boost::asio::async_read_until(
                     socket_, boost::asio::dynamic_buffer(responses_, 1024), "\n", boost::asio::use_awaitable);
+                uranus::utils::LogHelper::get().info("bytes {}, data {}", bytes, responses_);
             }
+
         } catch (std::exception &) {
             stop();
         }
@@ -100,6 +102,6 @@ private:
     boost::asio::ip::tcp::socket socket_;
     boost::asio::steady_timer timer_;
     std::queue<std::string> responses_;
-    std::mutex mtx_;
+    std::mutex mutex_;
 };
 }  // namespace uranus::tcp

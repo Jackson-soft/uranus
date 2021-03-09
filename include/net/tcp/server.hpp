@@ -23,7 +23,7 @@ class Server
 {
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIOContext()))
+        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext()))
     {
     }
 

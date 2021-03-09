@@ -57,7 +57,7 @@ private:
             std::vector<std::byte> tmp{};
             tmp.reserve(bytes);
             std::copy_n(buffer_.begin(), bytes, std::back_inserter(tmp));
-            uranus::utils::logHelper::instance().info("receive data bytes: {}, data size: {}", bytes, tmp.size());
+            uranus::utils::LogHelper::get().info("receive data bytes: {}, data size: {}", bytes, tmp.size());
 
             rtpParser_.unpack(std::move(tmp));
 

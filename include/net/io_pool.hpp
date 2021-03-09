@@ -3,6 +3,7 @@
 #include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/execution/outstanding_work.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/require.hpp>
 #include <boost/core/noncopyable.hpp>
 #include <cstdint>
 #include <list>
@@ -51,7 +52,7 @@ public:
         }
     }
 
-    auto getIOContext() -> boost::asio::io_context &
+    auto getIoContext() -> boost::asio::io_context &
     {
         boost::asio::io_context &ioContext = *ioContexts_.at(next_);
         ++next_;

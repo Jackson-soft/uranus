@@ -23,7 +23,7 @@ class server
 {
 public:
     explicit server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(iocPool_.getIOContext())
+        : iocPool_(size), acceptor_(iocPool_.getIoContext())
     {
     }
 

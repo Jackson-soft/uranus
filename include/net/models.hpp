@@ -10,7 +10,7 @@ namespace uranus::net
 class Return
 {
 public:
-    Return(std::uint64_t c, std::string_view m, std::string_view d): code(c), message(m), data(d) {}
+    Return(const std::uint64_t c, std::string_view m, std::string_view d): code(c), message(m), data(d) {}
 
     std::uint64_t code;
     std::string message;
