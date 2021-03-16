@@ -3,7 +3,6 @@
 #include "utils/byte_io.hpp"
 #include "utils/log.hpp"
 #include <algorithm>
-#include <bits/c++config.h>
 #include <cstdint>
 #include <functional>
 #include <iterator>

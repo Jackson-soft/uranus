@@ -12,11 +12,11 @@ namespace uranus::rtp
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |V=2|P| RC/FMT  |     PT=SR=200       |         length          |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-class Rtcp
+class RtcpServer
 {
 public:
-    Rtcp()  = default;
-    ~Rtcp() = default;
+    RtcpServer()  = default;
+    ~RtcpServer() = default;
 
 private:
     std::uint16_t version_ : 2;  // 2bit 版本号
