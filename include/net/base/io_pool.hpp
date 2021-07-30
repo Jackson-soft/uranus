@@ -11,10 +11,8 @@
 #include <thread>
 #include <vector>
 
-namespace uranus::net
-{
-class IoPool: public boost::noncopyable
-{
+namespace uranus::net {
+class IoPool : public boost::noncopyable {
 public:
     explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency())
     {
@@ -27,7 +25,10 @@ public:
         }
     }
 
-    ~IoPool() { stop(); }
+    ~IoPool()
+    {
+        stop();
+    }
 
     void run()
     {
@@ -36,7 +37,10 @@ public:
 
         for (auto const &it : ioContexts_) {
             threads.emplace_back(std::make_shared<std::thread>(
-                [](std::shared_ptr<boost::asio::io_context> const &svr) { svr->run(); }, it));
+                [](std::shared_ptr<boost::asio::io_context> const &svr) {
+                    svr->run();
+                },
+                it));
         }
 
         for (auto &it : threads) {
@@ -65,7 +69,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<boost::asio::io_context>> ioContexts_;
-    std::list<boost::asio::any_io_executor> works_;
-    std::uint32_t next_{0};
+    std::list<boost::asio::any_io_executor>               works_;
+    std::uint32_t                                         next_{0};
 };
 }  // namespace uranus::net

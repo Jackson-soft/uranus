@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 template<typename T>
 inline auto readByte(const std::vector<std::byte> &data) -> T
 {
@@ -22,7 +21,8 @@ template<typename T>
 inline auto writeByte(const T &data) -> std::vector<std::byte>
 {
     std::vector<std::byte> tmp{};
-    auto size = sizeof(T);
+    auto                   size = sizeof(T);
+
     for (unsigned int i = 0; i < size; ++i) {
         tmp.emplace_back(data >> ((size - 1 - i) * 8));
     }

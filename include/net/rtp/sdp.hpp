@@ -1,9 +1,7 @@
 #pragma once
 
-namespace uranus::rtp
-{
-class RtpSdp
-{
+namespace uranus::rtp {
+class RtpSdp {
 public:
     RtpSdp()  = default;
     ~RtpSdp() = default;

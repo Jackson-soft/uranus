@@ -4,8 +4,8 @@ set -u
 dir="build"
 
 if [ -d $dir ]; then
-    cmake --build $dir --config Release -j 4
-    exit 0
+	cmake --build $dir --config Release -j 4
+	exit 0
 fi
 
 mkdir -p $dir
@@ -21,5 +21,5 @@ cmake --build . --config Release -j 4
 lnFile="compile_commands.json"
 
 if [ ! -f ../$lnFile ]; then
-    ln -s $lnFile ..
+	ln -s $lnFile ..
 fi

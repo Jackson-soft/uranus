@@ -10,29 +10,33 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-namespace uranus::audio
-{
+namespace uranus::audio {
 // 音频合流器
-class Mixer
-{
+class Mixer {
 public:
-    auto create() -> bool { return true; }
+    auto create() -> bool
+    {
+        return true;
+    }
 
-    auto addSource() -> bool { return true; }
+    auto addSource() -> bool
+    {
+        return true;
+    }
 
     void mix() {}
 
 private:
     auto filters() -> int
     {
-        int ret{0};
-        char args[512];
+        int             ret{0};
+        char            args[512];
         const AVFilter *abuffersrc  = avfilter_get_by_name("abuffer");
         const AVFilter *abuffersink = avfilter_get_by_name("abuffersink");
-        AVFilterInOut *outputs      = avfilter_inout_alloc();
-        AVFilterInOut *inputs       = avfilter_inout_alloc();
+        AVFilterInOut * outputs     = avfilter_inout_alloc();
+        AVFilterInOut * inputs      = avfilter_inout_alloc();
 
-        filter_graph = avfilter_graph_alloc();
+        filter_graph                = avfilter_graph_alloc();
 
         if (!outputs || !inputs || !filter_graph) {
             return AVERROR(ENOMEM);
@@ -63,12 +67,12 @@ private:
         // av_frame_free(&filt_frame);
     }
 
-    AVFormatContext *fmt_ctx;
-    AVCodecContext *dec_ctx;
-    AVFilterContext *buffersink_ctx;
-    AVFilterContext *buffersrc_ctx;
-    AVFilterGraph *filter_graph;
-    int audio_stream_index = -1;
+    AVFormatContext *              fmt_ctx;
+    AVCodecContext *               dec_ctx;
+    AVFilterContext *              buffersink_ctx;
+    AVFilterContext *              buffersrc_ctx;
+    AVFilterGraph *                filter_graph;
+    int                            audio_stream_index = -1;
 
     std::vector<AVFilterContext *> srcs_;
 };

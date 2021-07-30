@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/log.hpp"
+
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/co_spawn.hpp>
@@ -18,20 +20,19 @@
 #include <string_view>
 #include <utility>
 
-#include "utils/log.hpp"
-
 //
-namespace uranus::websocket
-{
-class Connection: public std::enable_shared_from_this<Connection>
-{
+namespace uranus::websocket {
+class Connection : public std::enable_shared_from_this<Connection> {
 public:
-    explicit Connection(boost::asio::ip::tcp::socket &&socket): ws_(std::move(socket)), timer_(socket.get_executor())
+    explicit Connection(boost::asio::ip::tcp::socket &&socket) : ws_(std::move(socket)), timer_(socket.get_executor())
     {
         timer_.expires_at(std::chrono::steady_clock::time_point::max());
     }
 
-    ~Connection() { close(); }
+    ~Connection()
+    {
+        close();
+    }
 
     void run()
     {
@@ -46,7 +47,11 @@ public:
 
         // Accept the websocket handshake
         boost::asio::co_spawn(
-            ws_.get_executor(), [self = shared_from_this()] { return self->acceptor(); }, boost::asio::detached);
+            ws_.get_executor(),
+            [self = shared_from_this()] {
+                return self->acceptor();
+            },
+            boost::asio::detached);
     }
 
     // 远程地址
@@ -55,7 +60,10 @@ public:
     // 本地地址
     void local() {}
 
-    void close() { ws_.close(boost::beast::websocket::close_code::normal); }
+    void close()
+    {
+        ws_.close(boost::beast::websocket::close_code::normal);
+    }
 
 private:
     // Report a failure
@@ -64,7 +72,7 @@ private:
         if (ec == boost::asio::error::operation_aborted || ec == boost::beast::websocket::error::closed)
             return;
 
-        // utils::logHelper::instance().error("{}:{}", what, ec.message());
+        uranus::utils::LogHelper::get().error("{}:{}", what, ec.message());
     }
 
     auto acceptor() -> boost::asio::awaitable<void>
@@ -91,12 +99,12 @@ private:
         }
     }
 
-    void callback() {}
+    void                                                      callback() {}
 
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
-    boost::asio::steady_timer timer_;
-    boost::beast::flat_buffer buffer_;
-    std::queue<std::string> responses_;
-    std::mutex mtx_;
+    boost::asio::steady_timer                                 timer_;
+    boost::beast::flat_buffer                                 buffer_;
+    std::queue<std::string>                                   responses_;
+    std::mutex                                                mtx_;
 };
 }  // namespace uranus::websocket

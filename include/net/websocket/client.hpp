@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/log.hpp"
+
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/io_context.hpp>
@@ -19,14 +21,10 @@
 #include <string>
 #include <string_view>
 
-#include "utils/log.hpp"
-
-namespace uranus::websocket
-{
-class client
-{
+namespace uranus::websocket {
+class client {
 public:
-    explicit client(): resolver_(ioContext), ws_(ioContext) {}
+    explicit client() : resolver_(ioContext), ws_(ioContext) {}
 
     ~client()
     {
@@ -78,13 +76,18 @@ public:
         return true;
     }
 
-    void run() { ioContext.run(); }
+    void run()
+    {
+        ioContext.run();
+    }
 
     void write(std::string_view text)
     {
         if (text.empty())
             return;
-        boost::asio::post(ioContext, [this, text] { onWrite(text); });
+        boost::asio::post(ioContext, [this, text] {
+            onWrite(text);
+        });
     }
 
     void onWrite(std::string_view msg)
@@ -123,19 +126,21 @@ public:
         buffer_.consume(bytes_transferred);
     }
 
-    void close() { ws_.close(boost::beast::websocket::close_code::normal); }
+    void close()
+    {
+        ws_.close(boost::beast::websocket::close_code::normal);
+    }
 
 private:
     void fail(boost::system::error_code ec, std::string_view what)
     {
-        uranus::utils::logHelper::instance().error("{}:{}", what, ec.message());
+        uranus::utils::LogHelper::get().error("{}:{}", what, ec.message());
     }
 
-    boost::asio::io_context ioContext;
-    boost::asio::ip::tcp::resolver resolver_;
+    boost::asio::io_context                                   ioContext;
+    boost::asio::ip::tcp::resolver                            resolver_;
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
-
-    boost::beast::multi_buffer buffer_;
-    std::queue<std::string> responses_;
+    boost::beast::multi_buffer                                buffer_;
+    std::queue<std::string>                                   responses_;
 };
 }  // namespace uranus::websocket

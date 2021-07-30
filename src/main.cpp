@@ -1,14 +1,15 @@
 #include "net/rtp/server.hpp"
 #include "net/tcp/server.hpp"
 #include "net/websocket/server.hpp"
-#include <cstdlib>
-
 #include "utils/log.hpp"
+
+#include <cstdlib>
 
 auto main() -> int
 {
     uranus::tcp::Server svr;
-    svr.listen(9080);
+    const auto          port{9080};
+    svr.listen(port);
     svr.run();
 
     return EXIT_SUCCESS;

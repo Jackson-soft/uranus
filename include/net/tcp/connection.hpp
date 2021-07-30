@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/log.hpp"
+
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/co_spawn.hpp>
@@ -20,13 +22,9 @@
 #include <string_view>
 #include <utility>
 
-#include "utils/log.hpp"
-
 //
-namespace uranus::tcp
-{
-class Connection: public std::enable_shared_from_this<Connection>
-{
+namespace uranus::tcp {
+class Connection : public std::enable_shared_from_this<Connection> {
 public:
     explicit Connection(boost::asio::ip::tcp::socket &&socket)
         : socket_(std::move(socket)), timer_(socket_.get_executor())
@@ -39,10 +37,18 @@ public:
     void run()
     {
         boost::asio::co_spawn(
-            socket_.get_executor(), [self = shared_from_this()] { return self->reader(); }, boost::asio::detached);
+            socket_.get_executor(),
+            [self = shared_from_this()] {
+                return self->reader();
+            },
+            boost::asio::detached);
 
         boost::asio::co_spawn(
-            socket_.get_executor(), [self = shared_from_this()] { return self->writer(); }, boost::asio::detached);
+            socket_.get_executor(),
+            [self = shared_from_this()] {
+                return self->writer();
+            },
+            boost::asio::detached);
     }
 
     // 远程地址
@@ -71,12 +77,14 @@ private:
     {
         try {
             for (std::string responses_;;) {
-                auto bytes = co_await boost::asio::async_read_until(
-                    socket_, boost::asio::dynamic_buffer(responses_, 1024), "\n", boost::asio::use_awaitable);
+                auto bytes = co_await boost::asio::async_read_until(socket_,
+                                                                    boost::asio::dynamic_buffer(responses_, 1024),
+                                                                    "\n",
+                                                                    boost::asio::use_awaitable);
                 uranus::utils::LogHelper::get().info("bytes {}, data {}", bytes, responses_);
             }
-
-        } catch (std::exception &) {
+        }
+        catch (std::exception &) {
             stop();
         }
     }
@@ -88,20 +96,23 @@ private:
                 if (responses_.empty()) {
                     boost::system::error_code ec;
                     co_await timer_.async_wait(redirect_error(boost::asio::use_awaitable, ec));
-                } else {
-                    co_await boost::asio::async_write(
-                        socket_, boost::asio::buffer(responses_.front()), boost::asio::use_awaitable);
+                }
+                else {
+                    co_await boost::asio::async_write(socket_,
+                                                      boost::asio::buffer(responses_.front()),
+                                                      boost::asio::use_awaitable);
                     responses_.pop();
                 }
             }
-        } catch (std::exception &) {
+        }
+        catch (std::exception &) {
             stop();
         }
     }
 
     boost::asio::ip::tcp::socket socket_;
-    boost::asio::steady_timer timer_;
-    std::queue<std::string> responses_;
-    std::mutex mutex_;
+    boost::asio::steady_timer    timer_;
+    std::queue<std::string>      responses_;
+    std::mutex                   mutex_;
 };
 }  // namespace uranus::tcp

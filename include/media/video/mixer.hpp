@@ -1,9 +1,7 @@
 #pragma once
 
-namespace uranus::video
-{
+namespace uranus::video {
 // 视频合流器
-class Mixer
-{
+class Mixer {
 };
 }  // namespace uranus::video

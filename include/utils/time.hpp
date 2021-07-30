@@ -7,8 +7,7 @@
 #include <sstream>
 #include <string>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 //时间操作
 inline auto nowTime() -> std::tm
 {
@@ -19,7 +18,7 @@ inline auto nowTime() -> std::tm
 // 获取当前时间 格式： YYYY-MM-DD HH:MM:SS
 inline auto currentTime() -> std::string
 {
-    auto now = nowTime();
+    auto              now = nowTime();
     std::stringstream ss;
     ss << std::put_time(&now, "%F %T");
     return ss.str();
@@ -28,7 +27,7 @@ inline auto currentTime() -> std::string
 // 获取当前日期 格式：YYYY-MM-DD
 inline auto currentDay() -> std::string
 {
-    auto now = nowTime();
+    auto              now = nowTime();
     std::stringstream ss;
     ss << std::put_time(&now, "%F");
     return ss.str();

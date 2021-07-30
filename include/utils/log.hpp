@@ -6,10 +6,8 @@
 #include <spdlog/spdlog.h>
 #include <string_view>
 
-namespace uranus::utils
-{
-class LogHelper
-{
+namespace uranus::utils {
+class LogHelper {
 public:
     static auto get() -> LogHelper &
     {
@@ -20,38 +18,41 @@ public:
     template<typename T>
     void error(const T &msg)
     {
-        log->error(msg);
+        log_->error(msg);
     }
 
     template<typename... T>
     void error(std::string_view fmt, const T &...args)
     {
-        log->error(fmt, args...);
+        log_->error(fmt, args...);
     }
 
     template<typename T>
     void info(const T &msg)
     {
-        log->info(msg);
+        log_->info(msg);
     }
 
     template<typename... T>
     void info(std::string_view fmt, const T &...args)
     {
-        log->info(fmt, args...);
+        log_->info(fmt, args...);
     }
 
 private:
     LogHelper()
     {
-        log = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
-        log->set_level(spdlog::level::info);
-        log->flush_on(spdlog::level::info);
+        log_ = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
+        log_->set_level(spdlog::level::info);
+        log_->flush_on(spdlog::level::info);
         // log->set_pattern("[%Y-%m-%d %T.%e] [%@] [%!] [%l]: %v");
     }
 
-    ~LogHelper() { spdlog::drop_all(); }
+    ~LogHelper()
+    {
+        spdlog::drop_all();
+    }
 
-    std::shared_ptr<spdlog::logger> log;
+    std::shared_ptr<spdlog::logger> log_;
 };
 }  // namespace uranus::utils

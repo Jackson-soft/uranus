@@ -1,14 +1,14 @@
 #pragma once
 
 #include "database/dsn.hpp"
+
 #include <cstdint>
 #include <doctest/doctest.h>
-
 #include <iostream>
 
 TEST_CASE("dsn parse")
 {
-    auto str{"postgres://bob:secret@1.2.3.4:5432/mydb?sslmode=verify-full"};
+    auto                  str{"postgres://bob:secret@1.2.3.4:5432/mydb?sslmode=verify-full"};
     uranus::database::DSN dsn;
 
     CHECK(dsn.parse(str));

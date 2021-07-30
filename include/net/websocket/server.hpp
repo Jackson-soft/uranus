@@ -1,5 +1,9 @@
 #pragma once
 
+#include "connection.hpp"
+#include "net/base/io_pool.hpp"
+#include "utils/log.hpp"
+
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
@@ -13,21 +17,18 @@
 #include <thread>
 #include <vector>
 
-#include "connection.hpp"
-#include "net/io_pool.hpp"
-#include "utils/log.hpp"
-
-namespace uranus::websocket
-{
-class server
-{
+namespace uranus::websocket {
+class server {
 public:
     explicit server(std::uint32_t size = std::thread::hardware_concurrency())
         : iocPool_(size), acceptor_(iocPool_.getIoContext())
     {
     }
 
-    ~server() { stop(); }
+    ~server()
+    {
+        stop();
+    }
 
     auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {
@@ -85,7 +86,10 @@ public:
     // 设置消息处理回调
     void setHandler() {}
 
-    void stop() { iocPool_.stop(); }
+    void stop()
+    {
+        iocPool_.stop();
+    }
 
 private:
     void fail(boost::system::error_code ec, char const *what)
@@ -101,12 +105,12 @@ private:
         while (true) {
             auto socket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
-            auto conn = std::make_shared<uranus::websocket::Connection>(std::move(socket));
+            auto conn   = std::make_shared<uranus::websocket::Connection>(std::move(socket));
             conn->run();
         }
     }
 
-    uranus::net::IoPool iocPool_{};
+    uranus::net::IoPool            iocPool_{};
     boost::asio::ip::tcp::acceptor acceptor_;
 };
 }  // namespace uranus::websocket

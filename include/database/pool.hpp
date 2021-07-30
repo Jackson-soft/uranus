@@ -2,10 +2,8 @@
 
 #include <mutex>
 
-namespace uranus::database
-{
-class Pool
-{
+namespace uranus::database {
+class Pool {
 public:
     static auto get() -> Pool &
     {
@@ -19,9 +17,9 @@ public:
     }
 
 private:
-    void create() {}
+    void           create() {}
 
-    std::mutex mutex_;
+    std::mutex     mutex_;
     std::once_flag flag_;
 };
 }  // namespace uranus::database

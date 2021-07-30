@@ -1,5 +1,10 @@
 #pragma once
 
+#include "boost/asio/co_spawn.hpp"
+#include "boost/asio/detached.hpp"
+#include "net/base/io_pool.hpp"
+#include "net/tcp/connection.hpp"
+
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
@@ -12,22 +17,18 @@
 #include <string_view>
 #include <thread>
 
-#include "boost/asio/co_spawn.hpp"
-#include "boost/asio/detached.hpp"
-#include "net/io_pool.hpp"
-#include "net/tcp/connection.hpp"
-
-namespace uranus::tcp
-{
-class Server
-{
+namespace uranus::tcp {
+class Server {
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
         : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext()))
     {
     }
 
-    ~Server() { iocPool_.stop(); }
+    ~Server()
+    {
+        iocPool_.stop();
+    }
 
     auto listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
     {
@@ -89,12 +90,12 @@ private:
         while (true) {
             auto socket = co_await acceptor_->async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
-            auto conn = std::make_shared<uranus::tcp::Connection>(std::move(socket));
+            auto conn   = std::make_shared<uranus::tcp::Connection>(std::move(socket));
             conn->run();
         }
     }
 
-    uranus::net::IoPool iocPool_;
+    uranus::net::IoPool                             iocPool_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_;
 };
 }  // namespace uranus::tcp

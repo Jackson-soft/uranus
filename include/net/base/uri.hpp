@@ -17,37 +17,50 @@
 fragment
 
 */
-namespace uranus::websocket
-{
-class URL
-{
+namespace uranus::net {
+class URI {
 public:
-    URL() noexcept = default;
-    ~URL()         = default;
+    URI() noexcept = default;
+    ~URI()         = default;
 
-    auto parse(std::string_view rawurl) -> bool
+    auto parse(std::string_view rawuri) -> bool
     {
-        if (rawurl.empty())
+        if (rawuri.empty())
             return false;
         return false;
     }
 
-    auto hostname() -> std::string const & { return host_; }
+    auto hostname() -> std::string const &
+    {
+        return host_;
+    }
 
-    auto port() -> std::uint16_t { return port_; }
+    [[nodiscard]] auto port() const -> std::uint16_t
+    {
+        return port_;
+    }
 
-    auto path() -> std::string const & { return path_; }
+    auto path() -> std::string const &
+    {
+        return path_;
+    }
 
-    auto query() -> std::string const & { return query_; }
+    auto query() -> std::string const &
+    {
+        return query_;
+    }
 
-    auto isAbs() -> bool { return !scheme_.empty(); }
+    auto isAbs() -> bool
+    {
+        return !scheme_.empty();
+    }
 
 private:
-    std::string scheme_;
-    std::string host_;
+    std::string   scheme_;
+    std::string   host_;
     std::uint16_t port_;
-    std::string path_{"/"};
-    std::string query_;
-    std::string fragment_;
+    std::string   path_{"/"};
+    std::string   query_;
+    std::string   fragment_;
 };
-}  // namespace uranus::websocket
+}  // namespace uranus::net
