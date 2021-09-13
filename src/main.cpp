@@ -1,7 +1,6 @@
 #include "net/rtp/server.hpp"
 #include "net/tcp/server.hpp"
 #include "net/websocket/server.hpp"
-#include "utils/log.hpp"
 
 #include <cstdlib>
 

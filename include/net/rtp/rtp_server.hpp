@@ -72,7 +72,7 @@ private:
 
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;
     boost::asio::ip::udp::endpoint                remote_;
-    std::array<std::byte, 2048>                   buffer_;
+    std::array<std::byte, 2048>                   buffer_{};
     uranus::rtp::RtpPacket                        rtpParser_;
 };
 }  // namespace uranus::rtp

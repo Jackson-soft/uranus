@@ -1,6 +1,5 @@
 #pragma once
 
-#include <chrono>
 #include <memory>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -22,9 +21,9 @@ public:
     }
 
     template<typename... T>
-    void error(std::string_view fmt, const T &...args)
+    void error(std::string_view fmt, T &&...args)
     {
-        log_->error(fmt, args...);
+        log_->error(fmt, std::forward<T>(args)...);
     }
 
     template<typename T>
@@ -34,9 +33,9 @@ public:
     }
 
     template<typename... T>
-    void info(std::string_view fmt, const T &...args)
+    void info(std::string_view fmt, T &&...args)
     {
-        log_->info(fmt, args...);
+        log_->info(fmt, std::forward<T>(args)...);
     }
 
 private:
@@ -50,7 +49,8 @@ private:
 
     ~LogHelper()
     {
-        spdlog::drop_all();
+        log_->flush();
+        spdlog::shutdown();
     }
 
     std::shared_ptr<spdlog::logger> log_;
