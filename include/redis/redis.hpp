@@ -20,7 +20,7 @@ public:
         if (ctx == nullptr || (ctx->err != 0)) {
             return false;
         }
-        ctx_ = std::make_shared<::redisContext>(*ctx);
+        ctx_.reset(ctx);
         return true;
     }
 
@@ -40,7 +40,7 @@ public:
         if (key.empty() || value.empty()) {
             return 1;
         }
-        auto *reply = redisCommand(ctx_.get(), "SET %s %s", key, value);
+        auto *reply = ::redisCommand(ctx_.get(), "SET %s %s", key, value);
         return 0;
     }
 
@@ -52,4 +52,4 @@ public:
 private:
     std::shared_ptr<::redisContext> ctx_;
 };
-}  // namespace uranus::cache
+}  // namespace uranus::redis

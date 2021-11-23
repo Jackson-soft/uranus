@@ -10,7 +10,7 @@ fi
 
 mkdir -p $dir
 
-cd $dir
+cd $dir || exit
 
 conan install .. -b missing -u
 
@@ -20,6 +20,4 @@ cmake --build . --config Release -j 4
 
 lnFile="compile_commands.json"
 
-if [ ! -f ../$lnFile ]; then
-	ln -s $lnFile ..
-fi
+ln -sf $lnFile ..
