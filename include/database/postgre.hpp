@@ -1,28 +1,34 @@
 #pragma once
 
+#include "database/dsn.hpp"
+
 #include <memory>
 #include <pqxx/pqxx>
 #include <string>
 #include <string_view>
 
-namespace uranus::database {
 // PostgreSQL
-class Postgre {
+namespace uranus::database {
+const std::uint32_t pgPort = 5432;
+class Postgre
+{
 public:
     Postgre()  = default;
     ~Postgre() = default;
 
-    auto connect(std::string_view dsn) -> bool
-    {
-        if (dsn.empty()) {
+    auto Connect(std::string_view url) -> bool {
+        if (url.empty()) {
+            return false;
+        }
+        uranus::database::DSN dsn;
+        if (!dsn.Parse(url)) {
             return false;
         }
         // conn_ = std::make_unique<pqxx::connection>(dsn);
         return conn_->is_open();
     }
 
-    void insert(const std::string &sql)
-    {
+    void Insert(std::string_view sql) {
         if (sql.empty()) {
             return;
         }
@@ -32,8 +38,7 @@ public:
         work.commit();
     }
 
-    void close()
-    {
+    void Close() {
         if (conn_->is_open()) {
             conn_->close();
         }

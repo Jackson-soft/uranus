@@ -26,25 +26,26 @@ find_package(doctest REQUIRED)
 find_package(libpqxx REQUIRED)
 find_package(ffmpeg REQUIRED)
 find_package(hiredis REQUIRED)
+find_package(MySQL REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES} ${spdlog_INCLUDES}
-            ${ffmpeg_INCLUDES} ${libpqxx_INCLUDES} ${hiredis_INCLUDES})
+            ${ffmpeg_INCLUDES} ${hiredis_INCLUDES} ${MySQL_INCLUDES})
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE pthread ${Boost_LIBRARIES} ${ffmpeg_LIBRARIES}
-                            ${libpqxx_LIBRARIES} ${hiredis_LIBRARIES})
+                            ${hiredis_LIBRARIES} ${MySQL_LIBRARIES})
 
 set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)
 target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES} ${doctest_INCLUDES}
-            ${spdlog_INCLUDES} ${libpqxx_INCLUDES} ${hiredis_INCLUDES})
+            ${spdlog_INCLUDES} ${hiredis_INCLUDES} ${MySQL_INCLUDES})
 target_link_libraries(
-    ${unit_test} PRIVATE ${Boost_LIBRARIES} ${libpqxx_LIBRARIES}
-                         ${hiredis_LIBRARIES})
+    ${unit_test} PRIVATE ${Boost_LIBRARIES} ${hiredis_LIBRARIES}
+                         ${MySQL_LIBRARIES})
 
 enable_testing()
 

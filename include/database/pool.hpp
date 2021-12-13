@@ -1,25 +1,32 @@
 #pragma once
 
+#include <atomic>
 #include <mutex>
+#include <queue>
 
 namespace uranus::database {
-class Pool {
+class Pool
+{
 public:
-    static auto get() -> Pool &
-    {
+    static auto Get() -> Pool & {
         static Pool instance;
         return instance;
     }
 
-    void init()
-    {
-        // std::call_once(flag, create());
+    auto Init() -> bool {
+        std::call_once(flag_, [this]() {
+            this->create();
+        });
+        return ready_.load();
     }
 
 private:
-    void           create() {}
+    void create() {
+        ready_.store(false);
+    }
 
-    std::mutex     mutex_;
-    std::once_flag flag_;
+    std::mutex       mutex_;
+    std::once_flag   flag_;
+    std::atomic_bool ready_;
 };
 }  // namespace uranus::database

@@ -4,8 +4,7 @@
 
 #include <cstdlib>
 
-auto main() -> int
-{
+auto main() -> int {
     uranus::tcp::Server svr;
     const auto          port{9080};
     svr.listen(port);

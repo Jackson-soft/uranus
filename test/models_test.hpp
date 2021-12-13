@@ -3,17 +3,15 @@
 #include "net/base/models.hpp"
 
 #include <doctest/doctest.h>
-#include <iostream>
 
-TEST_CASE("client parse")
-{
-    uranus::net::Message cm{1, "2", "3"};
+TEST_CASE("json model parse") {
+    uranus::net::Message cm{1, "a message", "a data"};
     auto                 v = boost::json::value_from(cm);
-    std::cout << v.as_object().at("code").as_uint64() << std::endl;
+    CHECK_EQ(v.as_object().at("code").as_uint64(), 1);
+}
 
-    std::cout << boost::json::serialize(v) << std::endl;
-
+TEST_CASE("json model") {
     boost::json::value vj{{"code", std::uint64_t(1)}, {"message", "2"}, {"data", "3"}};
-    auto               myobj = boost::json::value_to<uranus::net::Message>(vj);
-    std::cout << myobj.code_ << std::endl;
+    auto               myObj = boost::json::value_to<uranus::net::Message>(vj);
+    CHECK_EQ(myObj.code_, 1);
 }
