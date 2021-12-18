@@ -18,29 +18,25 @@
 #include <thread>
 
 namespace uranus::tcp {
-class Server {
+class Server
+{
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext()))
-    {
-    }
+        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext())) {}
 
-    ~Server()
-    {
+    ~Server() {
         iocPool_.stop();
     }
 
-    auto listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
-    {
+    auto Listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
         if (port <= 0)
             return false;
 
         auto ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
-        return listen(ep);
+        return Listen(ep);
     }
 
-    auto listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool
-    {
+    auto Listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool {
         boost::system::error_code ec;
 
         acceptor_->open(endpoint.protocol(), ec);
@@ -73,20 +69,17 @@ public:
         return true;
     }
 
-    void run()
-    {
+    void Run() {
         boost::asio::co_spawn(acceptor_->get_executor(), doAccept(), boost::asio::detached);
         iocPool_.run();
     }
 
 private:
-    void fail(boost::system::error_code ec, std::string_view what)
-    {
+    void fail(boost::system::error_code ec, std::string_view what) {
         std::cerr << what << ": " << ec.message() << std::endl;
     }
 
-    auto doAccept() -> boost::asio::awaitable<void>
-    {
+    auto doAccept() -> boost::asio::awaitable<void> {
         while (true) {
             auto socket = co_await acceptor_->async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();

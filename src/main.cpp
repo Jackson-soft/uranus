@@ -7,8 +7,8 @@
 auto main() -> int {
     uranus::tcp::Server svr;
     const auto          port{9080};
-    svr.listen(port);
-    svr.run();
+    svr.Listen(port);
+    svr.Run();
 
     return EXIT_SUCCESS;
 }
