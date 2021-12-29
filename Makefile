@@ -1,15 +1,7 @@
 all: build
 
-cmake:
-	dir="build"
-
-	if [ ! -d $dir ]; then
-		mkdir -p $dir
-
-		conan install . -if $dir -b missing -u
-
-		cmake -S . -B $dir -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
-	fi
+cmakes:
+	cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 
 build:
 	cmake --build build --config Release -j 4

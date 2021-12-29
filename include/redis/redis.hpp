@@ -9,13 +9,13 @@ extern "C" {
 }
 
 namespace uranus::redis {
-class Redis {
+class Redis
+{
 public:
     Redis()  = default;
     ~Redis() = default;
 
-    auto Dial(std::string_view hostname = "127.0.0.1", int port = 6379) -> bool
-    {
+    auto Dial(std::string_view hostname = "127.0.0.1", int port = 6379) -> bool {
         auto *ctx = ::redisConnectNonBlock(hostname.data(), port);
         if (ctx == nullptr || (ctx->err != 0)) {
             return false;
@@ -24,8 +24,7 @@ public:
         return true;
     }
 
-    auto Ping() -> int
-    {
+    auto Ping() -> int {
         auto *reply = static_cast<::redisReply *>(::redisCommand(ctx_.get(), "PING"));
         if (reply == nullptr) {
             return 1;
@@ -35,8 +34,7 @@ public:
         return 0;
     }
 
-    auto Set(std::string_view key, std::string_view value) -> int
-    {
+    auto Set(std::string_view key, std::string_view value) -> int {
         if (key.empty() || value.empty()) {
             return 1;
         }
@@ -44,8 +42,7 @@ public:
         return 0;
     }
 
-    auto Get(std::string_view key) -> std::string_view
-    {
+    auto Get(std::string_view key) -> std::string_view {
         return "";
     }
 

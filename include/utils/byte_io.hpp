@@ -5,8 +5,7 @@
 
 namespace uranus::utils {
 template<typename T>
-inline auto readByte(const std::vector<std::byte> &data) -> T
-{
+inline auto ReadByte(const std::vector<std::byte> &data) -> T {
     T tmp{0};
     if (data.empty()) {
         return tmp;
@@ -20,8 +19,7 @@ inline auto readByte(const std::vector<std::byte> &data) -> T
 }
 
 template<typename T>
-inline auto writeByte(const T &data) -> std::vector<std::byte>
-{
+inline auto WriteByte(const T &data) -> std::vector<std::byte> {
     std::vector<std::byte> tmp{};
     auto                   size = sizeof(T);
 

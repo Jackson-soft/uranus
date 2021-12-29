@@ -12,10 +12,10 @@
 #include <vector>
 
 namespace uranus::net {
-class IoPool : public boost::noncopyable {
+class IoPool : public boost::noncopyable
+{
 public:
-    explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency())
-    {
+    explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency()) {
         ioContexts_.reserve(size);
         for (std::uint32_t i = 0; i < size; i++) {
             auto ioContext = std::make_shared<boost::asio::io_context>();
@@ -25,13 +25,11 @@ public:
         }
     }
 
-    ~IoPool()
-    {
+    ~IoPool() {
         stop();
     }
 
-    void run()
-    {
+    void run() {
         std::vector<std::shared_ptr<std::thread>> threads;
         threads.reserve(ioContexts_.size());
 
@@ -48,16 +46,14 @@ public:
         }
     }
 
-    void stop()
-    {
+    void stop() {
         works_.clear();
         for (auto &it : ioContexts_) {
             it->stop();
         }
     }
 
-    auto getIoContext() -> boost::asio::io_context &
-    {
+    auto getIoContext() -> boost::asio::io_context & {
         boost::asio::io_context &ioContext = *ioContexts_.at(next_);
         ++next_;
         if (next_ == ioContexts_.size()) {

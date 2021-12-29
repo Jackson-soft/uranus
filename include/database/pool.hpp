@@ -3,6 +3,8 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
+#include "database/database.hpp"
+#include <string_view>
 
 namespace uranus::database {
 class Pool
@@ -13,7 +15,7 @@ public:
         return instance;
     }
 
-    auto Init() -> bool {
+    auto Init(std::string_view dsn) -> bool {
         std::call_once(flag_, [this]() {
             this->create();
         });
@@ -22,11 +24,11 @@ public:
 
 private:
     void create() {
-        ready_.store(false);
+        ready_.store(true);
     }
 
     std::mutex       mutex_;
     std::once_flag   flag_;
-    std::atomic_bool ready_;
+    std::atomic_bool ready_{false};
 };
 }  // namespace uranus::database

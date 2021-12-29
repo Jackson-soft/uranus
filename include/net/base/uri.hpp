@@ -18,40 +18,35 @@ fragment
 
 */
 namespace uranus::net {
-class URI {
+class URI
+{
 public:
     URI() noexcept = default;
     ~URI()         = default;
 
-    auto parse(std::string_view rawuri) -> bool
-    {
+    auto Parse(std::string_view rawuri) -> bool {
         if (rawuri.empty())
             return false;
         return false;
     }
 
-    auto hostname() -> std::string const &
-    {
+    auto Hostname() -> std::string const & {
         return host_;
     }
 
-    [[nodiscard]] auto port() const -> std::uint16_t
-    {
+    [[nodiscard]] auto Port() const -> std::uint16_t {
         return port_;
     }
 
-    auto path() -> std::string const &
-    {
+    auto Path() -> std::string const & {
         return path_;
     }
 
-    auto query() -> std::string const &
-    {
+    auto Query() -> std::string const & {
         return query_;
     }
 
-    auto isAbs() -> bool
-    {
+    auto IsAbs() -> bool {
         return !scheme_.empty();
     }
 
