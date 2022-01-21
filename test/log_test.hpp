@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "doctest/doctest.h"
 #include "utils/log.hpp"
 
-TEST_CASE("test log")
-{
-    CHECK(1 == 1);
+#include <catch2/catch.hpp>
+
+TEST_CASE("test log") {
+    REQUIRE(1 == 1);
 }

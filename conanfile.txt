@@ -1,7 +1,7 @@
 [requires]
 boost/[>=1.75.0]
 spdlog/[==1.8.5]
-doctest/[>=2.4.4]
+catch2/[>=2.13.8]
 ffmpeg/[>=4.2.1]
 libpqxx/[==7.5.2]
 hiredis/[>=1.0.0]

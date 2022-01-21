@@ -2,12 +2,11 @@
 
 #include "redis/redis.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch.hpp>
 
-TEST_CASE("redis test")
-{
+TEST_CASE("redis test") {
     uranus::redis::Redis redis;
-    CHECK(redis.Dial("127.0.0.1", 6379) == true);
-    CHECK(redis.Dial() == true);
-    CHECK(redis.Ping() == 0);
+    REQUIRE(redis.Dial("127.0.0.1", 6379) == true);
+    REQUIRE(redis.Dial() == true);
+    REQUIRE(redis.Ping() == 0);
 }
