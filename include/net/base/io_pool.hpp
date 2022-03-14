@@ -12,8 +12,7 @@
 #include <vector>
 
 namespace uranus::net {
-class IoPool : public boost::noncopyable
-{
+class IoPool : public boost::noncopyable {
 public:
     explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency()) {
         ioContexts_.reserve(size);

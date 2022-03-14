@@ -13,8 +13,7 @@
   postgres://bob:secret@1.2.3.4:5432/mydb?sslmode=verify-full
 */
 namespace uranus::database {
-class DSN
-{
+class DSN {
 public:
     DSN()  = default;
     ~DSN() = default;

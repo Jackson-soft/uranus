@@ -18,8 +18,7 @@
 #include <thread>
 
 namespace uranus::tcp {
-class Server
-{
+class Server {
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
         : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext())) {}
@@ -29,8 +28,9 @@ public:
     }
 
     auto Listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
-        if (port <= 0)
+        if (port <= 0) {
             return false;
+        }
 
         auto ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
         return Listen(ep);

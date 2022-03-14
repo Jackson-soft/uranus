@@ -8,8 +8,7 @@
 // 文件监控
 
 namespace uranus::utils {
-class FsNotify
-{
+class FsNotify {
 public:
     FsNotify() {}
 

@@ -8,47 +8,40 @@
 namespace uranus::utils {
 class LogHelper {
 public:
-    static auto get() -> LogHelper &
-    {
+    static auto Instance() -> LogHelper & {
         static LogHelper logger;
         return logger;
     }
 
     template<typename T>
-    void error(const T &msg)
-    {
+    void error(const T &msg) {
         log_->error(msg);
     }
 
     template<typename... T>
-    void error(std::string_view fmt, T &&...args)
-    {
+    void error(std::string_view fmt, T &&...args) {
         log_->error(fmt, std::forward<T>(args)...);
     }
 
     template<typename T>
-    void info(const T &msg)
-    {
+    void info(const T &msg) {
         log_->info(msg);
     }
 
     template<typename... T>
-    void info(std::string_view fmt, T &&...args)
-    {
+    void info(std::string_view fmt, T &&...args) {
         log_->info(fmt, std::forward<T>(args)...);
     }
 
 private:
-    LogHelper()
-    {
+    LogHelper() {
         log_ = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
         log_->set_level(spdlog::level::info);
         log_->flush_on(spdlog::level::info);
         // log->set_pattern("[%Y-%m-%d %T.%e] [%@] [%!] [%l]: %v");
     }
 
-    ~LogHelper()
-    {
+    ~LogHelper() {
         log_->flush();
         spdlog::shutdown();
     }

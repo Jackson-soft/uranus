@@ -51,26 +51,22 @@ public:
     ~RtpPacket() = default;
 
     // 解包
-    auto unpack(std::vector<std::byte> &&data) -> bool
-    {
+    auto unpack(std::vector<std::byte> &&data) -> bool {
         return parse(std::move(data));
     }
 
     // 封包
-    auto pack() -> bool
-    {
+    auto pack() -> bool {
         return true;
     }
 
-    [[nodiscard]] auto data() const -> bool
-    {
+    [[nodiscard]] auto data() const -> bool {
         return true;
     }
 
 private:
     // auto parse(const std::uint8_t *buffer, std::size_t size) -> bool
-    auto parse(std::vector<std::byte> &&buffer) -> bool
-    {
+    auto parse(std::vector<std::byte> &&buffer) -> bool {
         if (buffer.size() < kFixedHeaderSize) {
             return false;
         }

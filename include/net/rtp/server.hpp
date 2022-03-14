@@ -6,8 +6,7 @@
 #include <thread>
 
 namespace uranus::rtp {
-class Server
-{
+class Server {
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency()) : iocPool_(size) {}
 

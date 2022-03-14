@@ -19,24 +19,22 @@ extern "C" {
 namespace uranus::audio {
 // 音频编解码器
 class Codec {
-    void create()
-    {
+    void create() {
         AVFrame *frame = av_frame_alloc();
     }
 
     void encode() {}
 
     // 解码
-    void decode(const std::vector<std::uint8_t> &data)
-    {
+    void decode(const std::vector<std::uint8_t> &data) {
         AVPacket *pkt   = av_packet_alloc();
-        AVCodec * codec = avcodec_find_decoder(AV_CODEC_ID_OPUS);
+        AVCodec  *codec = avcodec_find_decoder(AV_CODEC_ID_OPUS);
         if (codec == nullptr) {
             return;
         }
 
         AVCodecParserContext *parser = av_parser_init(codec->id);
-        AVCodecContext *      cctx   = avcodec_alloc_context3(codec);
+        AVCodecContext       *cctx   = avcodec_alloc_context3(codec);
 
         avcodec_open2(cctx, codec, nullptr);
 

@@ -22,28 +22,27 @@
 #include <string_view>
 
 namespace uranus::websocket {
-class client {
+class Client {
 public:
-    explicit client() : resolver_(ioContext), ws_(ioContext) {}
+    explicit Client() : resolver_(ioContext), ws_(ioContext) {}
 
-    ~client()
-    {
+    ~Client() {
         resolver_.cancel();
         close();
     }
 
     // uri like ws://localhost:9002/xxx
-    auto connect(std::string_view uri) -> bool
-    {
-        if (uri.empty())
+    auto Connect(std::string_view uri) -> bool {
+        if (uri.empty()) {
             return false;
+        }
         return false;
     }
 
-    auto connect(std::string_view host, std::string_view port, std::string_view path = "/") -> bool
-    {
-        if (host.empty() || port.empty())
+    auto Connect(std::string_view host, std::string_view port, std::string_view path = "/") -> bool {
+        if (host.empty() || port.empty()) {
             return false;
+        }
 
         // Look up the domain name
         auto const results = resolver_.resolve(host, port);
@@ -76,65 +75,60 @@ public:
         return true;
     }
 
-    void run()
-    {
+    void Run() {
         ioContext.run();
     }
 
-    void write(std::string_view text)
-    {
-        if (text.empty())
+    void Write(std::string_view text) {
+        if (text.empty()) {
             return;
+        }
         boost::asio::post(ioContext, [this, text] {
             onWrite(text);
         });
     }
 
-    void onWrite(std::string_view msg)
-    {
+    void onWrite(std::string_view msg) {
         responses_.emplace(msg);
         ws_.async_write(boost::asio::buffer(responses_.front()),
-                        boost::beast::bind_front_handler(&client::doWrite, this));
+                        boost::beast::bind_front_handler(&Client::doWrite, this));
     }
 
-    void doWrite(boost::system::error_code ec, std::size_t)
-    {
-        if (ec)
+    void doWrite(boost::system::error_code ec, std::size_t) {
+        if (ec) {
             return fail(ec, "write");
+        }
 
         responses_.pop();
 
         if (!responses_.empty()) {
             ws_.async_write(boost::asio::buffer(responses_.front()),
-                            boost::beast::bind_front_handler(&client::doWrite, this));
+                            boost::beast::bind_front_handler(&Client::doWrite, this));
         }
     }
 
-    void read()
-    {
+    void read() {
         // Read a message into our buffer
-        ws_.async_read(buffer_, boost::beast::bind_front_handler(&client::onRead, this));
+        ws_.async_read(buffer_, boost::beast::bind_front_handler(&Client::onRead, this));
     }
 
-    void onRead(boost::system::error_code ec, std::size_t bytes_transferred)
-    {
+    void onRead(boost::system::error_code ec, std::size_t bytes_transferred) {
         boost::ignore_unused(bytes_transferred);
 
-        if (ec)
+        if (ec) {
             return fail(ec, "read");
+        }
 
         buffer_.consume(bytes_transferred);
     }
 
-    void close()
-    {
+    void Close() {
         ws_.close(boost::beast::websocket::close_code::normal);
     }
 
 private:
-    void fail(boost::system::error_code ec, std::string_view what)
-    {
-        uranus::utils::LogHelper::get().error("{}:{}", what, ec.message());
+    void fail(boost::system::error_code ec, std::string_view what) {
+        uranus::utils::LogHelper::Instance().error("{}:{}", what, ec.message());
     }
 
     boost::asio::io_context                                   ioContext;

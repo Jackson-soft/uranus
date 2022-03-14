@@ -21,27 +21,23 @@ namespace uranus::websocket {
 class server {
 public:
     explicit server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(iocPool_.getIoContext())
-    {
-    }
+        : iocPool_(size), acceptor_(iocPool_.getIoContext()) {}
 
-    ~server()
-    {
+    ~server() {
         stop();
     }
 
-    auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool
-    {
-        if (port == 0)
+    auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
+        if (port == 0) {
             return false;
+        }
 
         auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
 
         return listen(endpoint);
     }
 
-    auto listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool
-    {
+    auto listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool {
         boost::beast::error_code ec;
 
         // Open the acceptor
@@ -77,8 +73,7 @@ public:
         return true;
     }
 
-    void run()
-    {
+    void run() {
         boost::asio::co_spawn(acceptor_.get_executor(), onAccept(), boost::asio::detached);
         iocPool_.run();
     }
@@ -86,22 +81,20 @@ public:
     // 设置消息处理回调
     void setHandler() {}
 
-    void stop()
-    {
+    void stop() {
         iocPool_.stop();
     }
 
 private:
-    void fail(boost::system::error_code ec, char const *what)
-    {
-        if (ec == boost::asio::error::operation_aborted)
+    void fail(boost::system::error_code ec, char const *what) {
+        if (ec == boost::asio::error::operation_aborted) {
             return;
+        }
 
         // utils::logHelper::instance().error("{}:{}", what, ec.message());
     }
 
-    auto onAccept() -> boost::asio::awaitable<void>
-    {
+    auto onAccept() -> boost::asio::awaitable<void> {
         while (true) {
             auto socket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();

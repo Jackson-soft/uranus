@@ -30,28 +30,24 @@ class RtpServer {
 public:
     explicit RtpServer(boost::asio::io_context &ioc) : socket_(std::make_shared<boost::asio::ip::udp::socket>(ioc)) {}
 
-    void listen(const std::uint16_t port, std::string_view host = "0.0.0.0")
-    {
+    void listen(const std::uint16_t port, std::string_view host = "0.0.0.0") {
         auto ep = boost::asio::ip::udp::endpoint(boost::asio::ip::make_address(host), port);
         socket_->open(ep.protocol());
         socket_->non_blocking(true);
         socket_->bind(ep);
     }
 
-    auto listen() -> bool
-    {
+    auto listen() -> bool {
         return false;
     }
 
-    void run()
-    {  // boost::asio::co_spawn(socket_->get_executor(), reader(), boost::asio::detached);
+    void run() {  // boost::asio::co_spawn(socket_->get_executor(), reader(), boost::asio::detached);
         reader();
     }
 
 private:
     // auto reader() -> boost::asio::awaitable<void>
-    void reader()
-    {
+    void reader() {
         while (true) {
             /*
             auto bytes = co_await socket_->async_receive_from(

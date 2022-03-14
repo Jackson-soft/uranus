@@ -10,8 +10,7 @@
 // PostgreSQL
 namespace uranus::database {
 const std::uint32_t pgPort = 5432;
-class Postgre
-{
+class Postgre {
 public:
     Postgre()  = default;
     ~Postgre() = default;

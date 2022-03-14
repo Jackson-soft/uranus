@@ -6,8 +6,7 @@
 #include <string_view>
 
 namespace uranus::net {
-class Message
-{
+class Message {
 public:
     Message(const std::uint64_t c, std::string_view m, std::string_view d) : code_(c), message_(m), data_(d) {}
 

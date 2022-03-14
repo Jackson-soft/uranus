@@ -18,15 +18,15 @@ fragment
 
 */
 namespace uranus::net {
-class URI
-{
+class URI {
 public:
     URI() noexcept = default;
     ~URI()         = default;
 
     auto Parse(std::string_view rawuri) -> bool {
-        if (rawuri.empty())
+        if (rawuri.empty()) {
             return false;
+        }
         return false;
     }
 

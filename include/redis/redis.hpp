@@ -9,8 +9,7 @@ extern "C" {
 }
 
 namespace uranus::redis {
-class Redis
-{
+class Redis {
 public:
     Redis()  = default;
     ~Redis() = default;

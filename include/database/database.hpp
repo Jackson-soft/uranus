@@ -4,8 +4,7 @@
 
 // database interface
 namespace uranus::database {
-class DataBase
-{
+class DataBase {
 public:
     DataBase()                                         = default;
     ~DataBase()                                        = default;

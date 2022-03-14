@@ -1,14 +1,14 @@
 #pragma once
 
+#include "database/database.hpp"
+
 #include <atomic>
 #include <mutex>
 #include <queue>
-#include "database/database.hpp"
 #include <string_view>
 
 namespace uranus::database {
-class Pool
-{
+class Pool {
 public:
     static auto Get() -> Pool & {
         static Pool instance;

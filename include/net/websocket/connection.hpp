@@ -24,18 +24,15 @@
 namespace uranus::websocket {
 class Connection : public std::enable_shared_from_this<Connection> {
 public:
-    explicit Connection(boost::asio::ip::tcp::socket &&socket) : ws_(std::move(socket)), timer_(socket.get_executor())
-    {
+    explicit Connection(boost::asio::ip::tcp::socket &&socket) : ws_(std::move(socket)), timer_(socket.get_executor()) {
         timer_.expires_at(std::chrono::steady_clock::time_point::max());
     }
 
-    ~Connection()
-    {
+    ~Connection() {
         close();
     }
 
-    void run()
-    {
+    void run() {
         // Set suggested timeout settings for the websocket
         ws_.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::server));
 
@@ -60,23 +57,21 @@ public:
     // 本地地址
     void local() {}
 
-    void close()
-    {
+    void close() {
         ws_.close(boost::beast::websocket::close_code::normal);
     }
 
 private:
     // Report a failure
-    void fail(boost::system::error_code ec, std::string_view what)
-    {
-        if (ec == boost::asio::error::operation_aborted || ec == boost::beast::websocket::error::closed)
+    void fail(boost::system::error_code ec, std::string_view what) {
+        if (ec == boost::asio::error::operation_aborted || ec == boost::beast::websocket::error::closed) {
             return;
+        }
 
-        uranus::utils::LogHelper::get().error("{}:{}", what, ec.message());
+        uranus::utils::LogHelper::Instance().error("{}:{}", what, ec.message());
     }
 
-    auto acceptor() -> boost::asio::awaitable<void>
-    {
+    auto acceptor() -> boost::asio::awaitable<void> {
         co_await ws_.async_accept(boost::asio::use_awaitable);
 
         while (true) {
@@ -84,7 +79,7 @@ private:
             if (bytes > 0) {
                 auto message = boost::beast::buffers_to_string(buffer_.data());
 
-                uranus::utils::LogHelper::get().info("read bytes: {}, message: {}", bytes, message);
+                uranus::utils::LogHelper::Instance().info("read bytes: {}, message: {}", bytes, message);
 
                 // onMessage(message.data());
 
