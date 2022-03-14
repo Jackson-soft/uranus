@@ -28,7 +28,7 @@ public:
 
     ~Client() {
         resolver_.cancel();
-        close();
+        Close();
     }
 
     // uri like ws://localhost:9002/xxx
@@ -84,17 +84,17 @@ public:
             return;
         }
         boost::asio::post(ioContext, [this, text] {
-            onWrite(text);
+            OnWrite(text);
         });
     }
 
-    void onWrite(std::string_view msg) {
+    void OnWrite(std::string_view msg) {
         responses_.emplace(msg);
         ws_.async_write(boost::asio::buffer(responses_.front()),
                         boost::beast::bind_front_handler(&Client::doWrite, this));
     }
 
-    void doWrite(boost::system::error_code ec, std::size_t) {
+    void DoWrite(boost::system::error_code ec, std::size_t) {
         if (ec) {
             return fail(ec, "write");
         }
@@ -107,12 +107,12 @@ public:
         }
     }
 
-    void read() {
+    void Read() {
         // Read a message into our buffer
-        ws_.async_read(buffer_, boost::beast::bind_front_handler(&Client::onRead, this));
+        ws_.async_read(buffer_, boost::beast::bind_front_handler(&Client::OnRead, this));
     }
 
-    void onRead(boost::system::error_code ec, std::size_t bytes_transferred) {
+    void OnRead(boost::system::error_code ec, std::size_t bytes_transferred) {
         boost::ignore_unused(bytes_transferred);
 
         if (ec) {

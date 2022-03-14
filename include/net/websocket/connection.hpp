@@ -68,7 +68,7 @@ private:
             return;
         }
 
-        uranus::utils::LogHelper::Instance().error("{}:{}", what, ec.message());
+        uranus::utils::LogHelper::Instance().Error("{}:{}", what, ec.message());
     }
 
     auto acceptor() -> boost::asio::awaitable<void> {
@@ -79,7 +79,7 @@ private:
             if (bytes > 0) {
                 auto message = boost::beast::buffers_to_string(buffer_.data());
 
-                uranus::utils::LogHelper::Instance().info("read bytes: {}, message: {}", bytes, message);
+                uranus::utils::LogHelper::Instance().Info("read bytes: {}, message: {}", bytes, message);
 
                 // onMessage(message.data());
 

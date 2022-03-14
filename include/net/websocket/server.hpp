@@ -18,26 +18,26 @@
 #include <vector>
 
 namespace uranus::websocket {
-class server {
+class Server {
 public:
-    explicit server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(iocPool_.getIoContext()) {}
+    explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
+        : iocPool_(size), acceptor_(iocPool_.IoContext()) {}
 
-    ~server() {
-        stop();
+    ~Server() {
+        Stop();
     }
 
-    auto listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
+    auto Listen(std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
         if (port == 0) {
             return false;
         }
 
         auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(host), port);
 
-        return listen(endpoint);
+        return Listen(endpoint);
     }
 
-    auto listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool {
+    auto Listen(boost::asio::ip::tcp::endpoint const &endpoint) -> bool {
         boost::beast::error_code ec;
 
         // Open the acceptor
@@ -73,16 +73,16 @@ public:
         return true;
     }
 
-    void run() {
+    void Run() {
         boost::asio::co_spawn(acceptor_.get_executor(), onAccept(), boost::asio::detached);
-        iocPool_.run();
+        iocPool_.Run();
     }
 
     // 设置消息处理回调
-    void setHandler() {}
+    void SetHandler() {}
 
-    void stop() {
-        iocPool_.stop();
+    void Stop() {
+        iocPool_.Stop();
     }
 
 private:

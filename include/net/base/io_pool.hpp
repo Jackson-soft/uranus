@@ -25,10 +25,10 @@ public:
     }
 
     ~IoPool() {
-        stop();
+        Stop();
     }
 
-    void run() {
+    void Run() {
         std::vector<std::shared_ptr<std::thread>> threads;
         threads.reserve(ioContexts_.size());
 
@@ -45,14 +45,14 @@ public:
         }
     }
 
-    void stop() {
+    void Stop() {
         works_.clear();
         for (auto &it : ioContexts_) {
             it->stop();
         }
     }
 
-    auto getIoContext() -> boost::asio::io_context & {
+    auto IoContext() -> boost::asio::io_context & {
         boost::asio::io_context &ioContext = *ioContexts_.at(next_);
         ++next_;
         if (next_ == ioContexts_.size()) {

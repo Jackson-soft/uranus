@@ -14,22 +14,22 @@ public:
     }
 
     template<typename T>
-    void error(const T &msg) {
+    void Error(const T &msg) {
         log_->error(msg);
     }
 
     template<typename... T>
-    void error(std::string_view fmt, T &&...args) {
+    void Error(std::string_view fmt, T &&...args) {
         log_->error(fmt, std::forward<T>(args)...);
     }
 
     template<typename T>
-    void info(const T &msg) {
+    void Info(const T &msg) {
         log_->info(msg);
     }
 
     template<typename... T>
-    void info(std::string_view fmt, T &&...args) {
+    void Info(std::string_view fmt, T &&...args) {
         log_->info(fmt, std::forward<T>(args)...);
     }
 

@@ -67,7 +67,7 @@ private:
             return;
         }
 
-        // utils::logHelper::instance().error("{}:{}", what, ec.message());
+        utils::LogHelper::Instance().Error("{}:{}", what, ec.message());
     }
 
     auto reader() -> boost::asio::awaitable<void> {
@@ -77,9 +77,9 @@ private:
                                                                     boost::asio::dynamic_buffer(responses_, 1024),
                                                                     "\n",
                                                                     boost::asio::use_awaitable);
-                uranus::utils::LogHelper::get().info("bytes {}, data {}", bytes, responses_);
+                uranus::utils::LogHelper::Instance().Info("bytes {}, data {}", bytes, responses_);
             }
-        } catch (std::exception &) { stop(); }
+        } catch (std::exception &) { Stop(); }
     }
 
     auto writer() -> boost::asio::awaitable<void> {
@@ -95,7 +95,7 @@ private:
                     responses_.pop();
                 }
             }
-        } catch (std::exception &) { stop(); }
+        } catch (std::exception &) { Stop(); }
     }
 
     boost::asio::ip::tcp::socket socket_;

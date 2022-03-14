@@ -21,10 +21,10 @@ namespace uranus::tcp {
 class Server {
 public:
     explicit Server(std::uint32_t size = std::thread::hardware_concurrency())
-        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.getIoContext())) {}
+        : iocPool_(size), acceptor_(std::make_shared<boost::asio::ip::tcp::acceptor>(iocPool_.IoContext())) {}
 
     ~Server() {
-        iocPool_.stop();
+        iocPool_.Stop();
     }
 
     auto Listen(const std::uint16_t port, std::string_view host = "0.0.0.0") -> bool {
@@ -71,7 +71,7 @@ public:
 
     void Run() {
         boost::asio::co_spawn(acceptor_->get_executor(), doAccept(), boost::asio::detached);
-        iocPool_.run();
+        iocPool_.Run();
     }
 
 private:
@@ -84,7 +84,7 @@ private:
             auto socket = co_await acceptor_->async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
             auto conn   = std::make_shared<uranus::tcp::Connection>(std::move(socket));
-            conn->run();
+            conn->Run();
         }
     }
 
