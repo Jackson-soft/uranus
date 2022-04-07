@@ -1,8 +1,12 @@
 #pragma once
 
+#include <boost/algorithm/string/case_conv.hpp>
+#include <cstddef>
 #include <memory>
+#include <spdlog/common.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/spdlog.h>
+#include <string>
 #include <string_view>
 
 namespace uranus::utils {
@@ -11,6 +15,27 @@ public:
     static auto Instance() -> LogHelper & {
         static LogHelper logger;
         return logger;
+    }
+
+    void Init(std::string_view level   = "info",
+              std::size_t      maxSize = static_cast<std::size_t>(1024 * 1024 * 20),
+              std::string_view file    = "logs/rotating.log",
+              std::size_t      maxFile = 3,
+              std::string_view name    = "app") {
+        // Create a file rotating logger with 20mb size max and 3 rotated files.
+        log_ = spdlog::rotating_logger_mt(name.data(), file.data(), maxSize, maxFile);
+        auto        lvl{spdlog::level::info};
+        std::string ll{level};
+        boost::to_lower(ll);
+        if (ll == "info") {
+            lvl = spdlog::level::info;
+        } else if (ll == "error") {
+            lvl = spdlog::level::err;
+        } else if (ll == "debug") {
+            lvl = spdlog::level::debug;
+        }
+        log_->set_level(lvl);
+        log_->flush_on(spdlog::level::debug);
     }
 
     template<typename T>
@@ -34,12 +59,7 @@ public:
     }
 
 private:
-    LogHelper() {
-        log_ = spdlog::rotating_logger_mt("app", "logs/rotating.log", 1048576 * 5, 3);
-        log_->set_level(spdlog::level::info);
-        log_->flush_on(spdlog::level::info);
-        // log->set_pattern("[%Y-%m-%d %T.%e] [%@] [%!] [%l]: %v");
-    }
+    LogHelper() = default;
 
     ~LogHelper() {
         log_->flush();
