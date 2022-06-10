@@ -2,7 +2,7 @@
 
 #include "net/base/models.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("json model parse") {
     uranus::net::Message cm{1, "a message", "a data"};

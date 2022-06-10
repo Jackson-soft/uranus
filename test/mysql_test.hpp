@@ -3,7 +3,7 @@
 #include "database/mysql.hpp"
 #include "database/pool.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 SCENARIO("mysql test") {
     GIVEN("mysql args test") {
