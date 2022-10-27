@@ -6,11 +6,11 @@ ffmpeg/[>=4.2.1]
 libpqxx/[>=7.5.2]
 hiredis/[>=1.0.0]
 libmysqlclient/[>=8.0.25]
-openssl/1.1.1o
+openssl/1.1.1q
  
 [generators]
 cmake_find_package
  
 [options]
-spdlog:header_only=True
 boost:header_only=True
+spdlog:header_only=True

@@ -41,7 +41,6 @@ private:
         return ret > 0;
     }
 
-private:
     int fd_;
 };
 }  // namespace uranus::utils

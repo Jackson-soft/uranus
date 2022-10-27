@@ -128,7 +128,7 @@ public:
 
 private:
     void fail(boost::system::error_code ec, std::string_view what) {
-        uranus::utils::LogHelper::Instance().error("{}:{}", what, ec.message());
+        uranus::utils::LogHelper::Instance().Error("{}:{}", what, ec.message());
     }
 
     boost::asio::io_context                                   ioContext;
