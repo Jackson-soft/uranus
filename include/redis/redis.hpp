@@ -4,15 +4,13 @@
 #include <string_view>
 #include <utility>
 
-extern "C" {
-#include <hiredis/hiredis.h>
-}
+// https://github.com/antirez/RESP3/blob/master/spec.md
 
 namespace uranus::redis {
-class Redis {
+class Client {
 public:
-    Redis()  = default;
-    ~Redis() = default;
+    Client()  = default;
+    ~Client() = default;
 
     auto Dial(std::string_view hostname = "127.0.0.1", int port = 6379) -> bool {
         auto *ctx = ::redisConnectNonBlock(hostname.data(), port);

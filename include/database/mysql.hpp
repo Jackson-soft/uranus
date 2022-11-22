@@ -15,6 +15,7 @@
 
 namespace uranus::database {
 const std::uint32_t mysqlPort = 3306;
+
 class MySQL : public DataBase {
 public:
     MySQL() : mysql_(std::make_unique<MYSQL>()) {}

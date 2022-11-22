@@ -4,3 +4,4 @@
 #include "models_test.hpp"
 // #include "pg_test.hpp"
 #include "mysql_test.hpp"
+#include "url_test.hpp"

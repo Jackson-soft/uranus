@@ -2,11 +2,11 @@
 boost/[>=1.75.0]
 spdlog/[>=1.8.5]
 catch2/[>=3.0.1]
-ffmpeg/[>=4.2.1]
+ffmpeg/[>=5.0]
 libpqxx/[>=7.5.2]
-hiredis/[>=1.0.0]
 libmysqlclient/[>=8.0.25]
-openssl/1.1.1q
+openssl/1.1.1s
+zlib/1.2.12
  
 [generators]
 cmake_find_package
