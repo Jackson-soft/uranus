@@ -43,14 +43,14 @@ target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
             ${Boost_INCLUDES}
-            ${Catch2_INCLUDES}
+            ${catch2_INCLUDES}
             ${fmt_INCLUDES}
             ${spdlog_INCLUDES}
             ${MySQL_INCLUDES}
             ${libpqxx_INCLUDES})
 target_link_libraries(
     ${unit_test} PRIVATE ${Boost_LIBRARIES} ${MySQL_LIBRARIES} ${fmt_LIBS}
-                         ${libpqxx_LIBRARIES} ${Catch2_LIBRARIES})
+                         ${libpqxx_LIBRARIES} ${catch2_LIBS})
 
 enable_testing()
 

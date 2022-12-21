@@ -41,20 +41,19 @@ public:
     }
 
     // add new work item to the pool
-    template<class F, class... Args>
-    auto Enqueue(F &&f, Args &&...args) -> std::future<typename std::invoke_result<F(Args...)>::type> {
-        using ret_type
-            = std::future<typename std::invoke_result<F, Args...>::type>;  // typename 此处加不加均可以的，下面同
-        std::function<typename std::invoke_result<F, Args...>::type()> func
-            = std::bind(std::forward<F>(f),
+    template<class Function, class... Args, typename ReturnType = std::invoke_result_t<Function &&, Args &&...>>
+    requires std::invocable<Function, Args...>
+    auto Enqueue(Function &&f, Args &&...args) -> std::future<ReturnType> {
+        std::function<ReturnType> func
+            = std::bind(std::forward<Function>(f),
                         std::forward<Args>(args)...);  // 连接函数和参数定义，特殊函数类型，避免左右值错误
 
-        auto task = std::make_shared<std::packaged_task<typename std::invoke_result<F, Args...>::type()>>(func);
+        auto task = std::make_shared<std::packaged_task<ReturnType>>(func);
 
         std::function<void()> warpper_func = [task]() {
             (*task)();
         };
-        ret_type res = task->get_future();
+        ReturnType res = task->get_future();
         if (stop) {
             throw std::runtime_error("enqueue on stopped ThreadPool");
         }
@@ -76,6 +75,9 @@ public:
             worker.join();
         }
     }
+
+    ThreadPool(const ThreadPool &)                     = delete;
+    auto operator=(const ThreadPool &) -> ThreadPool & = delete;
 
 private:
     // need to keep track of threads so we can join them

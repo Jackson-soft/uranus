@@ -4,12 +4,17 @@
 #include "net/websocket/server.hpp"
 */
 #include "fmt/core.h"
+#include "main.hpp"
+#include "redis/redis.hpp"
 
 #include <algorithm>
 #include <array>
+#include <boost/asio/steady_timer.hpp>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/ranges.h>
+#include <string>
 #include <vector>
 
 auto main() -> int {
@@ -31,6 +36,12 @@ auto main() -> int {
 
     std::move(vInt.begin(), vInt.begin() + 4, aInt.begin());
     fmt::print(stdout, "move vInt {}, aInt {}\n", vInt, aInt);
+
+    fmt::print(stdout, "write size {}\n", Write(2, std::string("sff"), "fdff", 4.455));
+
+    uranus::redis::Client client;
+    client.Dial();
+    client.Ping();
 
     return EXIT_SUCCESS;
 }

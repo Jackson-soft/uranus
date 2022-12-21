@@ -3,5 +3,7 @@
 #include "log_test.hpp"
 #include "models_test.hpp"
 // #include "pg_test.hpp"
-#include "mysql_test.hpp"
+#include "byte_test.hpp"
+// #include "mysql_test.hpp"
+#include "thread_test.hpp"
 #include "url_test.hpp"
