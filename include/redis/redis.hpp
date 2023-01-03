@@ -23,11 +23,14 @@ public:
             return false;
         }
 
-        return session_.Connect(hostname, port);
+        session_.Connect(hostname, port);
+
+        return resp3();
     }
 
     auto Ping() -> bool {
         session_.Write("PING");
+        session_.ReadReply();
         return true;
     }
 
@@ -46,6 +49,17 @@ public:
     }
 
 private:
+    /*
+     * 切换到 RESP3 协议
+     *
+     * https://redis.io/commands/hello/
+     */
+    auto resp3() -> bool {
+        session_.Write("HELLO", 3);
+        session_.ReadReply();
+        return true;
+    }
+
     boost::asio::io_context ioContext_;
     Session                 session_;
     Options                 options_;

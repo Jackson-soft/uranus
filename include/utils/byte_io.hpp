@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cstddef>
+#include <type_traits>
 #include <vector>
 
 namespace uranus::utils {
 template<typename T>
-inline auto ReadByte(const std::vector<char> &data) -> T {
+requires std::is_arithmetic<T>::value
+inline auto ReadByte(std::vector<char> &data) -> T {
     T tmp{0};
     if (data.empty()) {
         return tmp;
@@ -19,6 +21,7 @@ inline auto ReadByte(const std::vector<char> &data) -> T {
 }
 
 template<typename T>
+requires std::is_arithmetic<T>::value
 inline auto WriteByte(const T &data) -> std::vector<char> {
     std::vector<char> tmp{};
     auto              size = sizeof(T);

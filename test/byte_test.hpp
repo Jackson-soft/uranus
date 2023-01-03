@@ -10,21 +10,32 @@
 
 SCENARIO("byte read and write", "byte") {
     GIVEN("socket byte test") {
-        std::vector<char> data{51};
-        auto              res = uranus::utils::ReadByte<int>(data);
-        fmt::print(stdout, "data is {}\n", res);
+        WHEN("test byte and char") {
+            std::byte myByte{51};
+            fmt::print(stdout, "myByte is {}, int is {}\n", myByte, std::to_integer<int>(myByte));
 
-        std::byte myByte{51};
-        fmt::print(stdout, "myByte is {}, int is {}\n", myByte, std::to_integer<int>(myByte));
+            char myChar{51};
+            fmt::print(stdout, "myChar is {}\n", myChar);
+            REQUIRE(1 == 1);
+        }
+    }
 
-        auto bbc = std::byte('a');
-        fmt::print(stdout, "bbc is {}, int is {}\n", bbc, std::to_integer<int>(bbc));
+    GIVEN("vector test") {
+        std::vector<char> data{1, 23, 4, 6, 9};
 
-        auto bba = std::byte('51');
-        fmt::print(stdout, "bba is {}, int is {}\n", bba, std::to_integer<int>(bba));
+        REQUIRE(data.size() == 5);
+        REQUIRE(data.capacity() >= 5);
 
-        char myChar{51};
-        fmt::print(stdout, "myChar is {}\n", myChar);
-        REQUIRE(1 == 1);
+        WHEN("erase a i") {
+            std::erase(data, 1);
+
+            REQUIRE(data.size() == 4);
+
+            std::erase_if(data, [](char x) -> bool {
+                return x == 6;
+            });
+
+            REQUIRE(data.size() == 3);
+        }
     }
 }
