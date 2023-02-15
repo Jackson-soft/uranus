@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.25)
 
 project(uranus LANGUAGES CXX)
 
@@ -15,7 +15,8 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
-find_package(Boost REQUIRED COMPONENTS)
+find_package(Boost REQUIRED)
+find_package(asio REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
 find_package(ffmpeg REQUIRED)
@@ -28,13 +29,14 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
             ${Boost_INCLUDES}
+            ${asio_INCLUDES}
             ${fmt_INCLUDES}
             ${spdlog_INCLUDES}
             ${ffmpeg_INCLUDES}
             ${MySQL_INCLUDES}
             ${libpqxx_INCLUDES})
 target_link_libraries(
-    ${PROJECT_NAME} PRIVATE pthread ${Boost_LIBRARIES} ${ffmpeg_LIBRARIES}
+    ${PROJECT_NAME} PRIVATE pthread ${Boost_LIBRARIES} ${asio_LIBS} ${ffmpeg_LIBRARIES}
                             ${MySQL_LIBRARIES} ${libpqxx_LIBRARIES} ${fmt_LIBS})
 
 set(unit_test my_test)
@@ -43,13 +45,14 @@ target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
             ${Boost_INCLUDES}
+            ${asio_INCLUDES}
             ${catch2_INCLUDES}
             ${fmt_INCLUDES}
             ${spdlog_INCLUDES}
             ${MySQL_INCLUDES}
             ${libpqxx_INCLUDES})
 target_link_libraries(
-    ${unit_test} PRIVATE ${Boost_LIBRARIES} ${MySQL_LIBRARIES} ${fmt_LIBS}
+    ${unit_test} PRIVATE ${Boost_LIBRARIES} ${asio_LIBS} ${MySQL_LIBRARIES} ${fmt_LIBS}
                          ${libpqxx_LIBRARIES} ${catch2_LIBS})
 
 enable_testing()

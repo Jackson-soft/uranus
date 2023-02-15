@@ -7,6 +7,7 @@
 #include <cstring>
 #include <string>
 #include <type_traits>
+#include <typeinfo>
 #include <vector>
 
 /*
@@ -17,8 +18,8 @@ https://github.com/antirez/RESP3/blob/master/spec.md
 namespace uranus::redis {
 
 // redis resp protocol data type.
-const char RespError{'-'};      // -<string>\r\n
 const char RespStatus{'+'};     // +<string>\r\n
+const char RespError{'-'};      // -<string>\r\n
 const char RespString{'$'};     // $<length>\r\n<bytes>\r\n
 const char RespInt{':'};        // :<number>\r\n
 const char RespNil{'_'};        // _\r\n

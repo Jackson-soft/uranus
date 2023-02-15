@@ -1,18 +1,18 @@
 #pragma once
 
-#include "boost/asio/buffer.hpp"
-#include "boost/asio/buffers_iterator.hpp"
-#include "boost/asio/read.hpp"
-#include "boost/asio/read_until.hpp"
-#include "boost/asio/streambuf.hpp"
+#include "asio/buffer.hpp"
+#include "fmt/core.h"
 #include "packet.hpp"
 
 #include <any>
 #include <array>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -20,33 +20,51 @@
 namespace uranus::redis {
 class Session : public std::enable_shared_from_this<Session> {
 public:
-    explicit Session(boost::asio::io_context &ioc) : socket_(ioc) {}
+    explicit Session(asio::io_context &ioc) : socket_(ioc) {}
 
     ~Session() = default;
 
     auto Connect(std::string_view hostname = "127.0.0.1", const std::uint16_t port = 6379) -> bool {
-        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(hostname.data()), port);
+        asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(hostname.data()), port);
         socket_.connect(endpoint);
         return true;
     }
 
-    auto ReadReply() -> std::string {
-        auto line = readLine();
+    auto ReadReply() -> std::any {
+        std::string line = readLine();
 
-        if (line.starts_with(RespStatus)) {
-            return line.substr(1);
+        switch (line.at(0)) {
+            case RespStatus:
+            case RespError:
+            case RespBigInt:
+                return line.substr(1);
+            case RespString: {
+                int         number = std::stoi(line.substr(1));
+                std::string data   = readLine();
+                if (data.size() == number) {
+                    return data;
+                }
+                return "";
+            }
+            case RespVerbatim:
+                return readVerbatim(line);
+            case RespInt:
+                return readInt(line);
+            case RespFloat:
+                return readDouble(line);
+            case RespBool:
+                return readBool(line);
+            case RespMap:
+                return readMap(line);
+            case RespSet:
+                return readSet(line);
+            case RespArray:
+            case RespPush:
+                return readSlice(line);
+            default:
+                std::make_any<std::string>("");
         }
-        if (line.starts_with(RespString)) {
-            auto number = std::stoi(line.substr(1));
-            return readLen(number + 2).substr(0, number);
-        }
-        if (line.starts_with(RespMap)) {
-            line = readLine();
-            // return readMap(line);
-            return line;
-        }
-
-        return "";
+        return std::make_any<std::string>("");
     }
 
     template<typename... Args>
@@ -56,39 +74,98 @@ public:
         }
         auto data = packet_.Write(args...);
 
-        return socket_.send(boost::asio::buffer(data));
+        return socket_.send(asio::buffer(data));
     }
 
 private:
     // 去掉 \r\n
     auto readLine() -> std::string {
-        std::string buffer;
+        std::size_t length = asio::read_until(socket_, buffer_, '\n');
 
-        auto len = boost::asio::read_until(socket_, boost::asio::dynamic_buffer(buffer), '\n');
-        return buffer.substr(0, len - 2);
+        std::string line(asio::buffers_begin(buffer_.data()), asio::buffers_begin(buffer_.data()) + length - 2);
+
+        buffer_.consume(length);
+
+        fmt::print(stdout, "line {}\n", line);
+
+        return line;
     }
 
-    auto readLen(int size) -> std::string {
-        std::string data;
-        auto        len = boost::asio::read(socket_, boost::asio::buffer(data, size));
-        return data.substr(0, size);
-    }
+    // %3 :: map类型，有3个键值对 {key:value}
+    auto readMap(std::string &line) -> std::map<std::string, std::any> {
+        int                             number = std::stoi(line.substr(1));
+        std::map<std::string, std::any> result{};
 
-    auto readMap(std::string &line) -> std::string {
-        auto                               number = std::stoi(line.substr(1));
-        std::map<std::string, std::string> result;
         if (number > 0) {
             for (auto i = 0; i < number; ++i) {
                 auto key   = ReadReply();
                 auto value = ReadReply();
-                result.try_emplace(key, value);
+                result.try_emplace(std::any_cast<std::string>(key), value);
             }
         }
 
+        return result;
+    }
+
+    auto readSlice(std::string &line) -> std::vector<std::string> {
+        int                      number = std::stoi(line.substr(1));
+        std::vector<std::string> result{};
+        if (number > 0) {
+            result.reserve(number);
+            for (auto i = 0; i < number; ++i) {
+                auto data = ReadReply();
+                result.emplace_back(std::any_cast<std::string>(data));
+            }
+        }
+        return result;
+    }
+
+    auto readSet(std::string &line) -> std::set<std::string> {
+        int                   number = std::stoi(line.substr(1));
+        std::set<std::string> result{};
+        if (number > 0) {
+            for (auto i = 0; i < number; ++i) {
+                std::any data = ReadReply();
+                result.emplace(std::any_cast<std::string>(data));
+            }
+        }
+        return result;
+    }
+
+    // 最大范围不超过std::int64_t
+    auto readInt(std::string &line) -> std::int64_t {
+        return std::stoll(line.substr(1));
+    }
+
+    auto readDouble(std::string &line) -> double {
+        return std::stod(line.substr(1));
+    }
+
+    auto readBool(std::string &line) -> bool {
+        switch (line.at(1)) {
+            case 't':
+            case '1':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /*
+    =15<CR><LF>
+    txt:Some string<CR><LF>
+    */
+    auto readVerbatim(std::string &line) -> std::string {
+        int         number = std::stoi(line.substr(1));
+        std::string data   = readLine();
+        if (data.size() == number) {
+            return line.substr(3);
+        }
         return "";
     }
 
-    boost::asio::ip::tcp::socket socket_;
-    uranus::redis::Packet        packet_;
+    asio::ip::tcp::socket socket_;
+    uranus::redis::Packet packet_;
+    asio::streambuf       buffer_;  // 读出的数据流
 };
 }  // namespace uranus::redis

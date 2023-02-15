@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/algorithm/string/case_conv.hpp>
 #include <cstddef>
 #include <memory>
 #include <spdlog/common.h>
@@ -26,7 +25,6 @@ public:
         log_ = spdlog::rotating_logger_mt(name.data(), file.data(), maxSize, maxFile);
         auto        lvl{spdlog::level::info};
         std::string ll{level};
-        boost::to_lower(ll);
         if (ll == "info") {
             lvl = spdlog::level::info;
         } else if (ll == "error") {

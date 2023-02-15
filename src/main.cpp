@@ -14,6 +14,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/ranges.h>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,9 @@ auto main() -> int {
     std::move(vInt.begin(), vInt.begin() + 4, aInt.begin());
     fmt::print(stdout, "move vInt {}, aInt {}\n", vInt, aInt);
 
-    fmt::print(stdout, "write size {}\n", Write(2, std::string("sff"), "fdff", 4.455));
+    std::map<std::string, std::string> vMap{{"1", "1->1"}};
+
+    Write(1, 5.0, "fsf", vInt, vMap);
 
     uranus::redis::Client client;
     client.Dial();

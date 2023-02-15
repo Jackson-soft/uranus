@@ -1,6 +1,5 @@
 #pragma once
 
-#include "boost/asio/ip/tcp.hpp"
 #include "redis/options.hpp"
 #include "redis/session.hpp"
 
@@ -60,8 +59,8 @@ private:
         return true;
     }
 
-    boost::asio::io_context ioContext_;
-    Session                 session_;
-    Options                 options_;
+    asio::io_context ioContext_;
+    Session          session_;
+    Options          options_;
 };
 }  // namespace uranus::redis
