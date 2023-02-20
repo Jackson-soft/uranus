@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include <unistd.h>
 
 namespace uranus::utils {

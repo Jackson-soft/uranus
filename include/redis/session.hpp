@@ -1,6 +1,5 @@
 #pragma once
 
-#include "asio/buffer.hpp"
 #include "fmt/core.h"
 #include "packet.hpp"
 
@@ -12,6 +11,7 @@
 #include <cstdio>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -22,7 +22,9 @@ class Session : public std::enable_shared_from_this<Session> {
 public:
     explicit Session(asio::io_context &ioc) : socket_(ioc) {}
 
-    ~Session() = default;
+    ~Session() {
+        Close();
+    }
 
     auto Connect(std::string_view hostname = "127.0.0.1", const std::uint16_t port = 6379) -> bool {
         asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(hostname.data()), port);
@@ -34,18 +36,14 @@ public:
         std::string line = readLine();
 
         switch (line.at(0)) {
+            case RespNil:
+                return std::nullopt;
             case RespStatus:
             case RespError:
             case RespBigInt:
                 return line.substr(1);
-            case RespString: {
-                int         number = std::stoi(line.substr(1));
-                std::string data   = readLine();
-                if (data.size() == number) {
-                    return data;
-                }
-                return "";
-            }
+            case RespString:
+                return readString(line);
             case RespVerbatim:
                 return readVerbatim(line);
             case RespInt:
@@ -62,19 +60,23 @@ public:
             case RespPush:
                 return readSlice(line);
             default:
-                std::make_any<std::string>("");
+                return "";
         }
-        return std::make_any<std::string>("");
+        return "";
     }
 
-    template<typename... Args>
-    auto Write(Args... args) -> std::size_t {
-        if (sizeof...(args) == 0) {
+    auto Write(const std::vector<std::any> &args) -> std::size_t {
+        if (args.empty()) {
             return -1;
         }
-        auto data = packet_.Write(args...);
+        write_.clear();
+        write_ = packet_.Write(args);
 
-        return socket_.send(asio::buffer(data));
+        return socket_.send(asio::buffer(write_));
+    }
+
+    void Close() {
+        socket_.close();
     }
 
 private:
@@ -91,16 +93,32 @@ private:
         return line;
     }
 
+    // -1 是不存在key
+    auto readString(std::string &line) -> std::optional<std::string> {
+        // 有数据
+        if (int number = std::stoi(line.substr(1)); number >= 0) {
+            std::string data = readLine();
+            if (data.size() == number) {
+                return std::make_optional<std::string>(data);
+            }
+        }
+        return std::nullopt;
+    }
+
     // %3 :: map类型，有3个键值对 {key:value}
     auto readMap(std::string &line) -> std::map<std::string, std::any> {
-        int                             number = std::stoi(line.substr(1));
         std::map<std::string, std::any> result{};
 
-        if (number > 0) {
+        if (int number = std::stoi(line.substr(1)); number > 0) {
             for (auto i = 0; i < number; ++i) {
-                auto key   = ReadReply();
-                auto value = ReadReply();
-                result.try_emplace(std::any_cast<std::string>(key), value);
+                auto optKey = ReadReply();
+                auto value  = ReadReply();
+                if (optKey.has_value() && value.has_value()) {
+                    auto key = std::any_cast<std::optional<std::string>>(optKey);
+                    if (key.has_value()) {
+                        result.try_emplace(key.value(), value);
+                    }
+                }
             }
         }
 
@@ -108,9 +126,8 @@ private:
     }
 
     auto readSlice(std::string &line) -> std::vector<std::string> {
-        int                      number = std::stoi(line.substr(1));
         std::vector<std::string> result{};
-        if (number > 0) {
+        if (int number = std::stoi(line.substr(1)); number > 0) {
             result.reserve(number);
             for (auto i = 0; i < number; ++i) {
                 auto data = ReadReply();
@@ -121,9 +138,8 @@ private:
     }
 
     auto readSet(std::string &line) -> std::set<std::string> {
-        int                   number = std::stoi(line.substr(1));
         std::set<std::string> result{};
-        if (number > 0) {
+        if (int number = std::stoi(line.substr(1)); number > 0) {
             for (auto i = 0; i < number; ++i) {
                 std::any data = ReadReply();
                 result.emplace(std::any_cast<std::string>(data));
@@ -167,5 +183,6 @@ private:
     asio::ip::tcp::socket socket_;
     uranus::redis::Packet packet_;
     asio::streambuf       buffer_;  // 读出的数据流
+    std::vector<char>     write_;
 };
 }  // namespace uranus::redis

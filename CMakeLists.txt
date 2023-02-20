@@ -23,6 +23,7 @@ find_package(ffmpeg REQUIRED)
 find_package(MySQL REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Catch2 REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
@@ -31,29 +32,45 @@ target_include_directories(
             ${Boost_INCLUDES}
             ${asio_INCLUDES}
             ${fmt_INCLUDES}
+            ${nlohmann_json_INCLUDES}
             ${spdlog_INCLUDES}
             ${ffmpeg_INCLUDES}
             ${MySQL_INCLUDES}
             ${libpqxx_INCLUDES})
 target_link_libraries(
-    ${PROJECT_NAME} PRIVATE pthread ${Boost_LIBRARIES} ${asio_LIBS} ${ffmpeg_LIBRARIES}
-                            ${MySQL_LIBRARIES} ${libpqxx_LIBRARIES} ${fmt_LIBS})
+    ${PROJECT_NAME}
+    PRIVATE pthread
+            ${Boost_LIBRARIES}
+            ${asio_LIBRARIES}
+            ${fmt_LIBRARIES}
+            ${nlohmann_json_LIBRARIES}
+            ${ffmpeg_LIBRARIES}
+            ${MySQL_LIBRARIES}
+            ${libpqxx_LIBRARIES})
 
 set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)
 target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
+            ${catch2_INCLUDES}
             ${Boost_INCLUDES}
             ${asio_INCLUDES}
-            ${catch2_INCLUDES}
             ${fmt_INCLUDES}
-            ${spdlog_INCLUDES}
+            ${nlohmann_json_INCLUDES}
+            ${ffmpeg_INCLUDES}
             ${MySQL_INCLUDES}
             ${libpqxx_INCLUDES})
 target_link_libraries(
-    ${unit_test} PRIVATE ${Boost_LIBRARIES} ${asio_LIBS} ${MySQL_LIBRARIES} ${fmt_LIBS}
-                         ${libpqxx_LIBRARIES} ${catch2_LIBS})
+    ${unit_test}
+    PRIVATE ${catch2_LIBRARIES}
+            ${Boost_LIBRARIES}
+            ${asio_LIBRARIES}
+            ${fmt_LIBRARIES}
+            ${nlohmann_json_LIBRARIES}
+            ${ffmpeg_LIBRARIES}
+            ${MySQL_LIBRARIES}
+            ${libpqxx_LIBRARIES})
 
 enable_testing()
 

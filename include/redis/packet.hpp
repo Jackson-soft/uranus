@@ -8,6 +8,7 @@
 #include <string>
 #include <type_traits>
 #include <typeinfo>
+#include <utility>
 #include <vector>
 
 /*
@@ -50,10 +51,7 @@ public:
     Clients send commands to a Redis server as a RESP Array of Bulk Strings.
     example: set mykey myvalue => *3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$7\r\nmyvalue\r\n
     */
-    template<typename... Args>
-    auto Write(Args... args) -> std::vector<char> {
-        std::vector<std::any> data{args...};
-
+    auto Write(const std::vector<std::any> &data) -> std::vector<char> {
         buffer_.clear();
         buffer_.emplace_back(RespArray);
 

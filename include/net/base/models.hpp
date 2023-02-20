@@ -1,26 +1,32 @@
 #pragma once
 
-#include <boost/json/src.hpp>
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 
 namespace uranus::net {
-class Message {
-public:
-    Message(const std::uint64_t c, std::string_view m, std::string_view d) : code_(c), message_(m), data_(d) {}
+struct Message {
+    Message() : Message(0, "", "") {}
+
+    Message(const std::uint64_t code, std::string_view msg, std::string_view data)
+        : code_(code), message_(msg), data_(data) {}
 
     std::uint64_t code_;
     std::string   message_;
     std::string   data_;
 };
 
-void tag_invoke(boost::json::value_from_tag, boost::json::value &jv, Message const &c) {
-    jv = {{"code", c.code_}, {"message", c.message_}, {"data", c.data_}};
+// to_json 和 from_json 需要在同一命名空间下
+void to_json(nlohmann::json &data, const Message &msg) {
+    data["code"]    = msg.code_;
+    data["message"] = msg.message_;
+    data["data"]    = msg.data_;
 }
 
-Message tag_invoke(boost::json::value_to_tag<Message>, boost::json::value const &jv) {
-    const auto &jo = jv.as_object();
-    return Message(jo.at("code").as_uint64(), jo.at("message").as_string().data(), jo.at("data").as_string().data());
+void from_json(const nlohmann::json &data, Message &msg) {
+    data.at("code").get_to(msg.code_);
+    data.at("message").get_to(msg.message_);
+    data.at("data").get_to(msg.data_);
 }
 }  // namespace uranus::net

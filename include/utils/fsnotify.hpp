@@ -10,7 +10,7 @@
 namespace uranus::utils {
 class FsNotify {
 public:
-    FsNotify() {}
+    FsNotify() = default;
 
     auto Add() -> bool {
         return false;

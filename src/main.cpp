@@ -5,12 +5,12 @@
 */
 #include "fmt/core.h"
 #include "main.hpp"
-#include "redis/redis.hpp"
 
 #include <algorithm>
 #include <array>
 #include <boost/asio/steady_timer.hpp>
 #include <chrono>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/ranges.h>
@@ -25,7 +25,6 @@ auto main() -> int {
     svr.Listen(port);
     svr.Run();
     */
-    fmt::print(stdout, "ffff\n");
 
     std::vector<int>   vInt{2, 3, 45, 65};
     std::array<int, 4> aInt{0, 9, 8, 8};
@@ -41,10 +40,6 @@ auto main() -> int {
     std::map<std::string, std::string> vMap{{"1", "1->1"}};
 
     Write(1, 5.0, "fsf", vInt, vMap);
-
-    uranus::redis::Client client;
-    client.Dial();
-    client.Ping();
 
     return EXIT_SUCCESS;
 }
