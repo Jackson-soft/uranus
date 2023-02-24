@@ -6,3 +6,4 @@ cmake-build-debug/
 .idea/
 .devcontainer/
 CMakeLists.txt.user
+CMakeUserPresets.json

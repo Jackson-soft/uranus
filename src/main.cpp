@@ -3,16 +3,17 @@
 #include "net/tcp/server.hpp"
 #include "net/websocket/server.hpp"
 */
-#include "fmt/core.h"
+
 #include "main.hpp"
 
 #include <algorithm>
 #include <array>
-#include <boost/asio/steady_timer.hpp>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <map>
 #include <string>
@@ -29,13 +30,14 @@ auto main() -> int {
     std::vector<int>   vInt{2, 3, 45, 65};
     std::array<int, 4> aInt{0, 9, 8, 8};
 
-    fmt::print(stdout, "before vInt {}, aInt {}\n", vInt, aInt);
+    fmt::print("before vInt {}, aInt {}\n", vInt, aInt);
 
     std::copy_n(vInt.begin(), 4, aInt.begin());
-    fmt::print(stdout, "copy_n vInt {}, aInt {}\n", vInt, aInt);
+    fmt::print("copy_n vInt {}, aInt {}\n", vInt, aInt);
 
     std::move(vInt.begin(), vInt.begin() + 4, aInt.begin());
-    fmt::print(stdout, "move vInt {}, aInt {}\n", vInt, aInt);
+    fmt::print("move vInt {}, aInt {}\n", vInt, aInt);
+    fmt::print("ffff {}\n", "soooooooo");
 
     std::map<std::string, std::string> vMap{{"1", "1->1"}};
 

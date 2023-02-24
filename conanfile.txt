@@ -1,17 +1,14 @@
 [requires]
-boost/[>=1.75.0]
 asio/[>=1.24.0]
-spdlog/[>=1.8.5]
-catch2/[>=3.0.1]
-ffmpeg/[>=5.0]
-libpqxx/[>=7.5.2]
-libmysqlclient/[>=8.0.25]
 nlohmann_json/[>=3.11.2]
-openssl/1.1.1s
+fmt/[>=9.1.0]
+catch2/[>=3.3.1]
+spdlog/[>=1.11.0]
+libpqxx/[>=7.7.4]
+libmysqlclient/[>=8.0.31]
 
 [generators]
-cmake_find_package
+CMakeDeps
+CMakeToolchain
 
 [options]
-boost:header_only=True
-spdlog:header_only=True

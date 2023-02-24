@@ -4,6 +4,7 @@ project(uranus LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GUN")
     add_compile_options(-fcoroutines)
@@ -15,12 +16,11 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
-find_package(Boost REQUIRED)
 find_package(asio REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
-find_package(ffmpeg REQUIRED)
-find_package(MySQL REQUIRED)
+#find_package(ffmpeg REQUIRED)
+find_package(libmysqlclient REQUIRED)
 find_package(fmt REQUIRED)
 find_package(Catch2 REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -29,23 +29,22 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
-            ${Boost_INCLUDES}
-            ${asio_INCLUDES}
-            ${fmt_INCLUDES}
+            ${asio_INCLUDE_DIRS}
+            ${fmt_INCLUDE_DIRS}
             ${nlohmann_json_INCLUDES}
-            ${spdlog_INCLUDES}
+            ${spdlog_INCLUDE_DIRS}
             ${ffmpeg_INCLUDES}
-            ${MySQL_INCLUDES}
+            ${libmysqlclient_INCLUDE_DIRS}
             ${libpqxx_INCLUDES})
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE pthread
-            ${Boost_LIBRARIES}
             ${asio_LIBRARIES}
             ${fmt_LIBRARIES}
             ${nlohmann_json_LIBRARIES}
+            ${spdlog_LIBRARIES}
             ${ffmpeg_LIBRARIES}
-            ${MySQL_LIBRARIES}
+            ${libmysqlclient_LIBRARIES}
             ${libpqxx_LIBRARIES})
 
 set(unit_test my_test)
@@ -53,23 +52,21 @@ add_executable(${unit_test} test/main.cpp)
 target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
-            ${catch2_INCLUDES}
-            ${Boost_INCLUDES}
-            ${asio_INCLUDES}
+            ${Catch2_INCLUDE_DIRS}
+            ${asio_INCLUDE_DIRS}
             ${fmt_INCLUDES}
             ${nlohmann_json_INCLUDES}
             ${ffmpeg_INCLUDES}
-            ${MySQL_INCLUDES}
+            ${libmysqlclient_INCLUDE_DIRS}
             ${libpqxx_INCLUDES})
 target_link_libraries(
     ${unit_test}
-    PRIVATE ${catch2_LIBRARIES}
-            ${Boost_LIBRARIES}
+    PRIVATE ${Catch2_LIBRARIES}
             ${asio_LIBRARIES}
             ${fmt_LIBRARIES}
             ${nlohmann_json_LIBRARIES}
             ${ffmpeg_LIBRARIES}
-            ${MySQL_LIBRARIES}
+            ${libmysqlclient_LIBRARIES}
             ${libpqxx_LIBRARIES})
 
 enable_testing()

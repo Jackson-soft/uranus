@@ -86,9 +86,25 @@ public:
         auto result = session_.ReadReply();
         if (result.has_value()) {
             fmt::print(stdout, "get value: {}\n", std::any_cast<std::optional<std::string>>(result).value());
+            return std::any_cast<std::optional<std::string>>(result);
         }
+        return std::nullopt;
+    }
 
-        return std::any_cast<std::optional<std::string>>(result);
+    auto Del(std::string_view key) -> std::int64_t override {
+        if (key.empty()) {
+            return 0;
+        }
+        std::vector<std::any> cmd{"del", key.data()};
+
+        if (session_.Write(cmd) == 0) {
+            return -1;
+        }
+        auto result = session_.ReadReply();
+        if (result.has_value()) {
+            fmt::print(stdout, "delete result: {}\n", std::any_cast<std::optional<std::int64_t>>(result).value());
+        }
+        return -1;
     }
 
 private:

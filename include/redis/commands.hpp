@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace uranus::redis {
 
@@ -31,5 +32,6 @@ public:
     virtual auto Ping() -> bool                                                                          = 0;
     virtual auto Set(std::string_view key, const std::any &value, std::unique_ptr<SetArgs> args) -> bool = 0;
     virtual auto Get(std::string_view key) -> std::optional<std::string>                                 = 0;
+    virtual auto Del(std::string_view key) -> std::int64_t                                               = 0;
 };
 }  // namespace uranus::redis

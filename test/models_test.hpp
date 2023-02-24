@@ -1,20 +1,26 @@
 #pragma once
 
 #include "net/base/models.hpp"
-#include "nlohmann/json_fwd.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("json model parse") {
-    uranus::net::Message msg{1, "a message", "a data"};
+SCENARIO("json model parse") {
+    WHEN("message to json") {
+        uranus::net::Message msg{1, "a message", "a data"};
 
-    nlohmann::json data = msg;
-    REQUIRE(data["code"] == 1);
+        nlohmann::json data = msg;
 
-    nlohmann::json myData;
-    myData["code"] = 2;
+        REQUIRE(data["code"] == 1);
+    }
 
-    auto myMsg = myData.get<uranus::net::Message>();
+    WHEN("json to message") {
+        nlohmann::json myData;
+        myData["code"]    = 2;
+        myData["message"] = "mmm";
+        myData["data"]    = "ddd";
 
-    REQUIRE(myMsg.code_ == 2);
+        auto myMsg = myData.get<uranus::net::Message>();
+
+        REQUIRE(myMsg.code_ == 2);
+    }
 }

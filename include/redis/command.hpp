@@ -23,7 +23,7 @@ private:
 
 class StringCmd : public BaseCmd {
 public:
-    auto Result() -> std::string & {
+    auto Result() -> const std::string & {
         return value_;
     }
 
