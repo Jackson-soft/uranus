@@ -1,10 +1,20 @@
 #pragma once
 
+#include "redis/command.hpp"
 #include "redis/redis.hpp"
 
 #include <catch2/catch_test_macros.hpp>
+#include <string>
 
-SCENARIO("redis test") {
+SCENARIO("redis client") {
+    GIVEN("redis command") {
+        WHEN("string cmd") {
+            auto cmder = uranus::redis::Cmder<std::string>();
+        }
+        WHEN("int cmd") {
+            auto cmder = uranus::redis::Cmder<std::string>();
+        }
+    }
     GIVEN("a local domain") {
         uranus::redis::Client client;
         THEN("dial") {

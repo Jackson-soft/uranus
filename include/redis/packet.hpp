@@ -35,6 +35,8 @@ const char RespSet{'~'};        // ~<len>\r\n... (same as Array)
 const char RespAttr{'|'};       // |<len>\r\n(key)\r\n(value)\r\n... + command reply
 const char RespPush{'>'};       // ><len>\r\n... (same as Array)
 
+constexpr char const *separator = "\r\n";
+
 class Packet {
 public:
     Packet()  = default;
@@ -51,11 +53,11 @@ public:
     Clients send commands to a Redis server as a RESP Array of Bulk Strings.
     example: set mykey myvalue => *3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$7\r\nmyvalue\r\n
     */
-    auto Write(const std::vector<std::any> &data) -> std::vector<char> {
+    auto Write(const std::vector<std::string> &data) -> std::vector<char> {
         buffer_.clear();
         buffer_.emplace_back(RespArray);
 
-        writeLen(data.size());
+        header(data.size());
 
         std::for_each(data.begin(), data.end(), [this](const auto &arg) {
             WriteArg(arg);
@@ -65,20 +67,10 @@ public:
     }
 
     // 写入单条命令
-    void WriteArg(std::any arg) {
-        if (arg.type() == typeid(const char *)) {
-            const auto       *buf = std::any_cast<const char *>(arg);
-            std::vector<char> data(buf, buf + strlen(buf));
-            bytes(data);
-        } else if (arg.type() == typeid(std::string)) {
-            auto              buf = std::any_cast<std::string>(arg);
-            std::vector<char> data(buf.begin(), buf.end());
-            bytes(data);
-        } else if (arg.type() == typeid(int)) {
-            writeNumber(std::any_cast<int>(arg));
-        } else if (arg.type() == typeid(double)) {
-            writeNumber(std::any_cast<double>(arg));
-        }
+    void WriteArg(const std::string &arg) {
+        auto              buf = std::any_cast<std::string>(arg);
+        std::vector<char> data(buf.begin(), buf.end());
+        bytes(data);
     }
 
     void Reset() {
@@ -86,7 +78,7 @@ public:
     }
 
 private:
-    void writeLen(std::size_t len) {
+    void header(std::size_t len) {
         auto lens = std::to_string(len);
         std::for_each(lens.begin(), lens.end(), [this](auto const &arg) {
             buffer_.emplace_back(arg);
@@ -94,17 +86,9 @@ private:
         crlf();
     }
 
-    template<typename T>
-    requires std::is_arithmetic_v<T>
-    void writeNumber(T arg) {
-        auto              buf = std::to_string(arg);
-        std::vector<char> data(buf.begin(), buf.end());
-        bytes(data);
-    }
-
     void bytes(const std::vector<char> &data) {
         buffer_.emplace_back(RespString);
-        writeLen(data.size());
+        header(data.size());
         std::for_each(data.begin(), data.end(), [this](const auto &arg) {
             buffer_.emplace_back(arg);
         });

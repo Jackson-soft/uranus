@@ -65,7 +65,7 @@ public:
         return "";
     }
 
-    auto Write(const std::vector<std::any> &args) -> std::size_t {
+    auto Write(const std::vector<std::string> &args) -> std::size_t {
         if (args.empty()) {
             return -1;
         }
@@ -79,7 +79,6 @@ public:
         socket_.close();
     }
 
-private:
     // 去掉 \r\n
     auto readLine() -> std::string {
         std::size_t length = asio::read_until(socket_, buffer_, '\n');
@@ -180,6 +179,7 @@ private:
         return "";
     }
 
+private:
     asio::ip::tcp::socket socket_;
     uranus::redis::Packet packet_;
     asio::streambuf       buffer_;  // 读出的数据流

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fmt/core.h"
+#include "redis/command.hpp"
 #include "redis/commands.hpp"
 #include "redis/options.hpp"
 #include "redis/session.hpp"
@@ -37,6 +38,7 @@ public:
     auto Ping() -> bool override {
         session_.Write({"PING"});
         session_.ReadReply();
+        auto cmd = uranus::redis::Cmder<std::string>();
         return true;
     }
 
