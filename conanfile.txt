@@ -1,15 +1,18 @@
 [requires]
 asio/[>=1.24.0]
 nlohmann_json/[>=3.11.2]
-fmt/[>=9.1.0]
 catch2/[>=3.3.1]
 spdlog/[>=1.11.0]
 libpqxx/[>=7.7.4]
 libmysqlclient/[>=8.0.31]
-ffmpeg/5.1
+ffmpeg/[>=5.1]
 
 [generators]
 CMakeDeps
 CMakeToolchain
 
+[layout]
+cmake_layout
+
 [options]
+*:shared=False

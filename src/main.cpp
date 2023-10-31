@@ -15,6 +15,7 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <format>
 #include <map>
 #include <string>
 #include <vector>
@@ -40,6 +41,8 @@ auto main() -> int {
     fmt::print("ffff {}\n", "soooooooo");
 
     std::map<std::string, std::string> vMap{{"1", "1->1"}};
+
+    std::format("heelo {}", "ddf");
 
     Write(1, 5.0, "fsf", vInt, vMap);
 

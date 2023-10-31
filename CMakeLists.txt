@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(uranus
-    LANGUAGES CXX
-)
+project(uranus LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,7 +18,7 @@ find_package(asio REQUIRED)
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
-#find_package(ffmpeg REQUIRED)
+find_package(ffmpeg REQUIRED)
 find_package(libmysqlclient REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Catch2 REQUIRED)
@@ -29,12 +27,12 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
-    ${asio_INCLUDE_DIRS}
-    ${fmt_INCLUDE_DIRS}
-    ${nlohmann_json_INCLUDES}
-    ${spdlog_INCLUDE_DIRS}
-    ${ffmpeg_INCLUDES}
-    ${libmysqlclient_INCLUDE_DIRS}
+    ${asio_INCLUDE_DIR}
+    ${fmt_INCLUDE_DIR}
+    ${nlohmann_json_INCLUDE_DIR}
+    ${spdlog_INCLUDE_DIR}
+    ${ffmpeg_INCLUDE_DIR}
+    ${libmysqlclient_INCLUDE_DIR}
     ${libpqxx_INCLUDES})
 target_link_libraries(
     ${PROJECT_NAME}
