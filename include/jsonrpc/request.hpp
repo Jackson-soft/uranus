@@ -22,7 +22,9 @@ this could cause confusion in handling.
 */
 
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
+#include <string_view>
 
 namespace uranus::jsonrpc {
 class Request {
@@ -30,13 +32,43 @@ public:
     Request()  = default;
     ~Request() = default;
 
-    std::string jsonrpc_{"2.0"};
+    auto Parse(std::string_view msg) -> bool {
+        auto jsonMessage = nlohmann::json::parse(msg);
+        if (jsonMessage["jsonrpc"].is_string()) {
+            version_ = jsonMessage["jsonrpc"].get<std::string>();
+        }
+
+        if (jsonMessage["id"].is_number()) {
+            id_ = jsonMessage["id"].get<int>();
+        } else if (jsonMessage["id"].is_string()) {
+            id_ = jsonMessage["id"].get<std::string>();
+        }
+
+        if (jsonMessage["method"].is_string()) {
+            method_ = jsonMessage["method"].get<std::string>();
+        }
+        if (jsonMessage["params"].is_object()) {
+            params_ = jsonMessage["params"];
+        }
+        return true;
+    }
+
+    auto Params() -> nlohmann::json {
+        return params_;
+    }
+
+    auto Method() -> const std::string & {
+        return method_;
+    }
+
+private:
+    std::string version_;
     std::string method_;
 
     // Params must be objects or arrays
-    json params_;
+    nlohmann::json params_;
 
     // IDs must be string, numerical or null
-    json id_ = {};
+    std::variant<int, std::string, void *> id_;
 };
 }  // namespace uranus::jsonrpc

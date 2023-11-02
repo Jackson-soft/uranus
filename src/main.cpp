@@ -42,8 +42,6 @@ auto main() -> int {
 
     std::map<std::string, std::string> vMap{{"1", "1->1"}};
 
-    std::format("heelo {}", "ddf");
-
     Write(1, 5.0, "fsf", vInt, vMap);
 
     return EXIT_SUCCESS;

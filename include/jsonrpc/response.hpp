@@ -21,6 +21,24 @@ If there was an error in detecting the id in the Request object (e.g. Parse erro
 Either the result member or error member MUST be included, but both members MUST NOT be included.
 */
 
+#include "version.hpp"
+
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+#include <string>
+#include <string_view>
+
 namespace uranus::jsonrpc {
-class Response {};
+class Response {
+public:
+    Response(std::string_view id) : version_(Version()), id_(id) {}
+
+    ~Response() = default;
+
+private:
+    std::string    version_;
+    std::string    id_;
+    nlohmann::json result_;
+    nlohmann::json error_;
+};
 }  // namespace uranus::jsonrpc

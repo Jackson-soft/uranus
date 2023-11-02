@@ -29,6 +29,8 @@ The value of this member is defined by the Server (e.g. detailed error informati
 */
 
 #include <cstdint>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 namespace uranus::jsonrpc {
@@ -38,8 +40,21 @@ public:
     ~Error() = default;
 
 private:
+    /*
+    A Number that indicates the error type that occurred.
+    This MUST be an integer.
+    */
     std::int32_t code_{};
-    std::string  message_;
-    std::string  data_;
+    /*
+    A String providing a short description of the error.
+    The message SHOULD be limited to a concise single sentence.
+    */
+    std::string message_;
+    /*
+    A Primitive or Structured value that contains additional information about the error.
+    This may be omitted.
+    The value of this member is defined by the Server (e.g. detailed error information, nested errors etc.).
+    */
+    nlohmann::json data_;
 };
 }  // namespace uranus::jsonrpc

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.20)
 
 project(uranus LANGUAGES CXX)
 
@@ -21,19 +21,18 @@ find_package(libpqxx REQUIRED)
 find_package(ffmpeg REQUIRED)
 find_package(libmysqlclient REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(Catch2 REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
-    ${asio_INCLUDE_DIR}
-    ${fmt_INCLUDE_DIR}
-    ${nlohmann_json_INCLUDE_DIR}
-    ${spdlog_INCLUDE_DIR}
-    ${ffmpeg_INCLUDE_DIR}
-    ${libmysqlclient_INCLUDE_DIR}
-    ${libpqxx_INCLUDES})
+    ${asio_INCLUDE_DIRS}
+    ${fmt_INCLUDE_DIRS}
+    ${nlohmann_json_INCLUDE_DIRS}
+    ${spdlog_INCLUDE_DIRS}
+    ${ffmpeg_INCLUDE_DIRS}
+    ${libmysqlclient_INCLUDE_DIRS}
+    ${libpqxx_INCLUDE_DIRS})
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE pthread
@@ -45,6 +44,10 @@ target_link_libraries(
     ${libmysqlclient_LIBRARIES}
     ${libpqxx_LIBRARIES})
 
+enable_testing()
+
+find_package(Catch2 REQUIRED)
+
 set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)
 target_include_directories(
@@ -52,11 +55,12 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/include
     ${Catch2_INCLUDE_DIRS}
     ${asio_INCLUDE_DIRS}
-    ${fmt_INCLUDES}
-    ${nlohmann_json_INCLUDES}
-    ${ffmpeg_INCLUDES}
+    ${fmt_INCLUDE_DIRS}
+    ${nlohmann_json_INCLUDE_DIRS}
+    ${ffmpeg_INCLUDE_DIRS}
     ${libmysqlclient_INCLUDE_DIRS}
-    ${libpqxx_INCLUDES})
+    ${libpqxx_INCLUDE_DIRS})
+
 target_link_libraries(
     ${unit_test}
     PRIVATE ${Catch2_LIBRARIES}
@@ -67,6 +71,4 @@ target_link_libraries(
     ${libmysqlclient_LIBRARIES}
     ${libpqxx_LIBRARIES})
 
-enable_testing()
-
-add_test(NAME catch2 COMMAND $<TARGET_FILE:${unit_test}> --success)
+add_test(NAME ${unit_test} COMMAND $<TARGET_FILE:${unit_test}> --success)
