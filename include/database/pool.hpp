@@ -8,12 +8,12 @@
 namespace uranus::database {
 class Pool {
 public:
-    static auto Get() -> Pool & {
+    static auto Instance() -> Pool & {
         static Pool instance;
         return instance;
     }
 
-    auto Init(std::string_view dsn) -> bool {
+    auto Initalize(std::string_view dsn) -> bool {
         std::call_once(flag_, [this]() {
             this->create();
         });

@@ -22,7 +22,6 @@ this could cause confusion in handling.
 */
 
 #include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
 
@@ -33,22 +32,23 @@ public:
     ~Request() = default;
 
     auto Parse(std::string_view msg) -> bool {
-        auto jsonMessage = nlohmann::json::parse(msg);
-        if (jsonMessage["jsonrpc"].is_string()) {
-            version_ = jsonMessage["jsonrpc"].get<std::string>();
+        auto data = nlohmann::json::parse(msg);
+        if (data["jsonrpc"].is_string()) {
+            version_ = data["jsonrpc"].get<std::string>();
         }
 
-        if (jsonMessage["id"].is_number()) {
-            id_ = jsonMessage["id"].get<int>();
-        } else if (jsonMessage["id"].is_string()) {
-            id_ = jsonMessage["id"].get<std::string>();
+        if (data["id"].is_number()) {
+            id_ = data["id"].get<int>();
+        } else if (data["id"].is_string()) {
+            id_ = data["id"].get<std::string>();
         }
 
-        if (jsonMessage["method"].is_string()) {
-            method_ = jsonMessage["method"].get<std::string>();
+        if (data["method"].is_string()) {
+            method_ = data["method"].get<std::string>();
         }
-        if (jsonMessage["params"].is_object()) {
-            params_ = jsonMessage["params"];
+
+        if (data["params"].is_object()) {
+            params_ = data["params"];
         }
         return true;
     }
@@ -62,13 +62,29 @@ public:
     }
 
 private:
+    // A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
     std::string version_;
+
+    /*
+    A String containing the name of the method to be invoked. Method names that begin with the word rpc followed by a
+    period character (U+002E or ASCII 46) are reserved for rpc-internal methods and extensions and MUST NOT be used for
+    anything else.
+    */
     std::string method_;
 
-    // Params must be objects or arrays
+    /*
+    A Structured value that holds the parameter values to be used during the invocation of the method. This member MAY
+    be omitted.
+
+    params must be objects or arrays
+    */
     nlohmann::json params_;
 
-    // IDs must be string, numerical or null
+    /*
+    An identifier established by the Client that MUST contain a String, Number, or NULL value if included. If it is not
+    included it is assumed to be a notification. The value SHOULD normally not be Null [1] and Numbers SHOULD NOT
+    contain fractional parts
+    */
     std::variant<int, std::string, void *> id_;
 };
 }  // namespace uranus::jsonrpc

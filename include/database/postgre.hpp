@@ -10,6 +10,7 @@
 // PostgreSQL
 namespace uranus::database {
 const std::uint32_t pgPort = 5432;
+
 class Postgre {
 public:
     Postgre()  = default;
@@ -19,6 +20,7 @@ public:
         if (url.empty()) {
             return false;
         }
+
         uranus::database::DSN dsn;
         if (!dsn.Parse(url)) {
             return false;

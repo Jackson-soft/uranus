@@ -57,7 +57,7 @@ public:
         if (stop_) {
             throw std::runtime_error("enqueue on stopped ThreadPool");
         }
-        std::unique_lock<std::mutex> lock(mutex_);
+        const std::unique_lock<std::mutex> lock(mutex_);
         tasks_.emplace(warpper_func);
         condition_.notify_one();
         return res;
@@ -66,7 +66,7 @@ public:
     // the destructor joins all threads
     ~ThreadPool() {
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            const std::unique_lock<std::mutex> lock(mutex_);
             stop_ = true;
         }
         condition_.notify_all();

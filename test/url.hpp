@@ -8,12 +8,12 @@ SCENARIO("url test") {
     GIVEN("http url test") {
         const auto        *str{"http://example.org/absolute/URI/with/absolute/path/to/resource.txt"};
         uranus::utils::URL url;
-        CHECK_FALSE(!url.Parse(str));
+        CHECK(url.Parse(str));
     }
 
     GIVEN("ftp url test") {
         const auto        *str{"ftp://example.org/resource.txt"};
         uranus::utils::URL url;
-        CHECK_FALSE(!url.Parse(str));
+        CHECK(url.Parse(str));
     }
 }

@@ -98,7 +98,7 @@ private:
         while (true) {
             auto socket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
             // auto ep     = socket.remote_endpoint();
-            auto conn   = std::make_shared<uranus::websocket::Connection>(std::move(socket));
+            auto conn = std::make_shared<uranus::websocket::Connection>(std::move(socket));
             conn->run();
         }
     }

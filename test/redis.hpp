@@ -18,8 +18,8 @@ SCENARIO("redis client") {
     GIVEN("a local domain") {
         uranus::redis::Client client;
         THEN("dial") {
-            REQUIRE(client.Dial() == true);
-            REQUIRE(client.Ping() == true);
+            CHECK(client.Dial());
+            CHECK(client.Ping());
         }
 
         const auto *key   = "myKey";

@@ -4,5 +4,6 @@
 #include "byte.hpp"
 // #include "mysql.hpp"
 // #include "redis.hpp"
+#include "jsonrpc.hpp"
 #include "thread.hpp"
 #include "url.hpp"

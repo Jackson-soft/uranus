@@ -14,7 +14,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options(/std:c++latest /await /W3 /WX)
 endif()
 
-find_package(asio REQUIRED)
+find_package(Boost REQUIRED)
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
@@ -26,7 +26,7 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
-    ${asio_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
     ${fmt_INCLUDE_DIRS}
     ${nlohmann_json_INCLUDE_DIRS}
     ${spdlog_INCLUDE_DIRS}
@@ -36,7 +36,7 @@ target_include_directories(
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE pthread
-    ${asio_LIBRARIES}
+    ${Boost_LIBRARIES}
     ${fmt_LIBRARIES}
     ${nlohmann_json_LIBRARIES}
     ${spdlog_LIBRARIES}
@@ -54,7 +54,7 @@ target_include_directories(
     ${unit_test}
     PRIVATE ${PROJECT_SOURCE_DIR}/include
     ${Catch2_INCLUDE_DIRS}
-    ${asio_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
     ${fmt_INCLUDE_DIRS}
     ${nlohmann_json_INCLUDE_DIRS}
     ${ffmpeg_INCLUDE_DIRS}
@@ -64,7 +64,7 @@ target_include_directories(
 target_link_libraries(
     ${unit_test}
     PRIVATE ${Catch2_LIBRARIES}
-    ${asio_LIBRARIES}
+    ${Boost_LIBRARIES}
     ${fmt_LIBRARIES}
     ${nlohmann_json_LIBRARIES}
     ${ffmpeg_LIBRARIES}

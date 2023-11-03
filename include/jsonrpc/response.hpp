@@ -21,24 +21,84 @@ If there was an error in detecting the id in the Request object (e.g. Parse erro
 Either the result member or error member MUST be included, but both members MUST NOT be included.
 */
 
+#include "error.hpp"
 #include "version.hpp"
 
+#include <algorithm>
+#include <fmt/core.h>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace uranus::jsonrpc {
 class Response {
 public:
-    Response(std::string_view id) : version_(Version()), id_(id) {}
+    Response() = default;
+
+    explicit Response(std::string_view id) : id_(id) {}
 
     ~Response() = default;
 
+    void AddResult(nlohmann::json result) {
+        result_ = std::move(result);
+    }
+
+    void AddError(nlohmann::json error) {
+        error_ = std::move(error);
+    }
+
+    auto String() -> std::string {
+        nlohmann::json result;
+
+        result["jsonrpc"] = version_;
+        result["id"]      = id_;
+
+        if (error_ != nullptr) {
+            result["error"] = error_;
+        } else {
+            result["result"] = result_;
+        }
+
+        return result.dump(-1, ' ', true, nlohmann::detail::error_handler_t::ignore);
+    }
+
+    // lsp 字符串
+    auto LspString() -> std::string {
+        auto message = String();
+        auto header  = fmt::format("Content-Length:{}\r\n\r\n", message.size());
+
+        header.append(message);
+
+        return std::move(header);
+    }
+
 private:
-    std::string    version_;
-    std::string    id_;
-    nlohmann::json result_;
-    nlohmann::json error_;
+    /*
+    A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
+    */
+    std::string version_{Version()};
+
+    /*
+    This member is REQUIRED.
+    It MUST be the same as the value of the id member in the Request Object.
+    If there was an error in detecting the id in the Request object (e.g. Parse error/Invalid Request), it MUST be Null.
+    */
+    std::string id_;
+
+    /*
+    This member is REQUIRED on success.
+    This member MUST NOT exist if there was an error invoking the method.
+    The value of this member is determined by the method invoked on the Server.
+    */
+    nlohmann::json result_{nullptr};
+
+    /*
+    This member is REQUIRED on error.
+    This member MUST NOT exist if there was no error triggered during invocation.
+    The value for this member MUST be an Object as defined in section 5.1.
+    */
+    nlohmann::json error_{nullptr};
 };
 }  // namespace uranus::jsonrpc

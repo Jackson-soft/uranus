@@ -32,15 +32,15 @@ public:
             position = 0;
         }
 
-        auto info                           = url.find_last_of('@');
-        auto infoStr                        = url.substr(position, info - position);
-        auto user                           = infoStr.find_first_of(':');
-        user_                               = infoStr.substr(0, user);
-        password_                           = infoStr.substr(user + 1);
+        auto info    = url.find_last_of('@');
+        auto infoStr = url.substr(position, info - position);
+        auto user    = infoStr.find_first_of(':');
+        user_        = infoStr.substr(0, user);
+        password_    = infoStr.substr(user + 1);
 
         // pgsql://user:pass@tcp(localhost:5555)/dbname?aa=bb
-        auto                        address = url.find_last_of('?');
-        auto                        addrStr = url.substr(info + 1, address - info - 1);
+        auto address = url.find_last_of('?');
+        auto addrStr = url.substr(info + 1, address - info - 1);
 
         std::string_view::size_type schema{0};
         if (auto protocol = addrStr.find_first_of('('); protocol != std::string_view::npos) {
@@ -53,8 +53,8 @@ public:
                 host_   = addrStr.substr(protocol + 1, hostEnd - protocol - 1);
                 schema  = hostEnd + 2;
             } else {
-                hostEnd      = addrStr.find_last_of(':');
-                host_        = addrStr.substr(protocol + 1, hostEnd - protocol - 1);
+                hostEnd = addrStr.find_last_of(':');
+                host_   = addrStr.substr(protocol + 1, hostEnd - protocol - 1);
 
                 auto port    = addrStr.find_last_of(')');
                 auto portStr = addrStr.substr(hostEnd + 1, port - hostEnd - 1);
@@ -64,8 +64,8 @@ public:
                 schema = port + 2;
             }
         } else {
-            auto host    = addrStr.find_last_of(':');
-            host_        = addrStr.substr(0, host);
+            auto host = addrStr.find_last_of(':');
+            host_     = addrStr.substr(0, host);
 
             auto port    = addrStr.find_last_of('/');
             auto portStr = addrStr.substr(host + 1, port - host - 1);
@@ -76,7 +76,7 @@ public:
             schema = port + 1;
         }
 
-        schema_       = addrStr.substr(schema);
+        schema_ = addrStr.substr(schema);
 
         auto paramStr = url.substr(address + 1);
 

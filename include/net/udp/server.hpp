@@ -6,7 +6,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/udp.hpp>
-//#include <boost/asio/steady_timer.hpp>
+// #include <boost/asio/steady_timer.hpp>
 #include "utils/log.hpp"
 
 #include <algorithm>
@@ -48,7 +48,7 @@ private:
             auto bytes = co_await socket_->async_receive_from(
                 boost::asio::buffer(buffer_), remote_, boost::asio::use_awaitable);
  */
-            auto                   bytes = socket_->receive_from(boost::asio::buffer(buffer_), remote_);
+            auto bytes = socket_->receive_from(boost::asio::buffer(buffer_), remote_);
 
             std::vector<std::byte> tmp{};
             tmp.reserve(bytes);
