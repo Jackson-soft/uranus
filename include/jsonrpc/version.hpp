@@ -1,7 +1,5 @@
 #pragma once
 
-// https://www.jsonrpc.org/specification
-
 #include <string>
 
 namespace uranus::jsonrpc {

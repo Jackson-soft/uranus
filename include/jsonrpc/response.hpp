@@ -21,7 +21,6 @@ If there was an error in detecting the id in the Request object (e.g. Parse erro
 Either the result member or error member MUST be included, but both members MUST NOT be included.
 */
 
-#include "error.hpp"
 #include "version.hpp"
 
 #include <algorithm>
@@ -37,7 +36,9 @@ class Response {
 public:
     Response() = default;
 
-    explicit Response(std::string_view id) : id_(id) {}
+    explicit Response(std::string_view id) : id_(id.data()) {}
+
+    explicit Response(int id) : id_(id) {}
 
     ~Response() = default;
 
@@ -52,10 +53,17 @@ public:
     auto String() -> std::string {
         nlohmann::json result;
 
-        result["jsonrpc"] = version_;
-        result["id"]      = id_;
+        result["jsonrpc"] = jsonrpc_;
 
-        if (error_ != nullptr) {
+        if (id_.index() == 0) {
+            result["id"] = std::get<int>(id_);
+        } else if (id_.index() == 1) {
+            result["id"] = std::get<int>(id_);
+        } else {
+            result["id"] = nullptr;
+        }
+
+        if (!error_.empty()) {
             result["error"] = error_;
         } else {
             result["result"] = result_;
@@ -78,27 +86,27 @@ private:
     /*
     A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
     */
-    std::string version_{Version()};
+    std::string jsonrpc_{Version()};
 
     /*
     This member is REQUIRED.
     It MUST be the same as the value of the id member in the Request Object.
     If there was an error in detecting the id in the Request object (e.g. Parse error/Invalid Request), it MUST be Null.
     */
-    std::string id_;
+    std::variant<int, std::string, void *> id_{nullptr};
 
     /*
     This member is REQUIRED on success.
     This member MUST NOT exist if there was an error invoking the method.
     The value of this member is determined by the method invoked on the Server.
     */
-    nlohmann::json result_{nullptr};
+    nlohmann::json result_{};
 
     /*
     This member is REQUIRED on error.
     This member MUST NOT exist if there was no error triggered during invocation.
     The value for this member MUST be an Object as defined in section 5.1.
     */
-    nlohmann::json error_{nullptr};
+    nlohmann::json error_{};
 };
 }  // namespace uranus::jsonrpc

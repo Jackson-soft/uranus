@@ -24,6 +24,8 @@ this could cause confusion in handling.
 #include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
+#include <valarray>
+#include <variant>
 
 namespace uranus::jsonrpc {
 class Request {
@@ -34,7 +36,7 @@ public:
     auto Parse(std::string_view msg) -> bool {
         auto data = nlohmann::json::parse(msg);
         if (data["jsonrpc"].is_string()) {
-            version_ = data["jsonrpc"].get<std::string>();
+            jsonrpc_ = data["jsonrpc"].get<std::string>();
         }
 
         if (data["id"].is_number()) {
@@ -61,9 +63,17 @@ public:
         return method_;
     }
 
+    auto Version() -> std::string {
+        return jsonrpc_;
+    }
+
+    auto Id() -> std::variant<int, std::string, void *> {
+        return id_;
+    }
+
 private:
     // A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
-    std::string version_;
+    std::string jsonrpc_;
 
     /*
     A String containing the name of the method to be invoked. Method names that begin with the word rpc followed by a
@@ -73,18 +83,18 @@ private:
     std::string method_;
 
     /*
+    An identifier established by the Client that MUST contain a String, Number, or NULL value if included. If it is not
+    included it is assumed to be a notification. The value SHOULD normally not be Null [1] and Numbers SHOULD NOT
+    contain fractional parts
+    */
+    std::variant<int, std::string, void *> id_{nullptr};
+
+    /*
     A Structured value that holds the parameter values to be used during the invocation of the method. This member MAY
     be omitted.
 
     params must be objects or arrays
     */
-    nlohmann::json params_;
-
-    /*
-    An identifier established by the Client that MUST contain a String, Number, or NULL value if included. If it is not
-    included it is assumed to be a notification. The value SHOULD normally not be Null [1] and Numbers SHOULD NOT
-    contain fractional parts
-    */
-    std::variant<int, std::string, void *> id_;
+    nlohmann::json params_{};
 };
 }  // namespace uranus::jsonrpc
