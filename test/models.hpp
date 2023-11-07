@@ -10,7 +10,7 @@ SCENARIO("json model parse") {
 
         nlohmann::json data = msg;
 
-        REQUIRE(data["code"] == 1);
+        CHECK(data["code"] == 1);
     }
 
     WHEN("json to message") {
@@ -21,6 +21,6 @@ SCENARIO("json model parse") {
 
         auto myMsg = myData.get<uranus::net::Message>();
 
-        REQUIRE(myMsg.code_ == 2);
+        CHECK(myMsg.code_ == 2);
     }
 }
