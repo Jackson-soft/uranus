@@ -23,7 +23,6 @@ Either the result member or error member MUST be included, but both members MUST
 
 #include "version.hpp"
 
-#include <algorithm>
 #include <fmt/core.h>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>

@@ -3,12 +3,10 @@
 #include <any>
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <system_error>
 #include <tuple>
-#include <vector>
 
 namespace uranus::redis {
 
@@ -17,7 +15,7 @@ struct SetExtra {
     std::uint64_t EX_{0};  // Set the specified expire time, in seconds.
     std::uint64_t PX_{0};  // Set the specified expire time, in milliseconds.
     std::uint64_t EXAT_{
-        0};                // timestamp-seconds -- Set the specified Unix time at which the key will expire, in seconds.
+        0};  // timestamp-seconds -- Set the specified Unix time at which the key will expire, in seconds.
     std::uint64_t PXAT_{
         0};  // Stimestamp-milliseconds -- Set the specified Unix time at which the key will expire, in milliseconds.
     bool NX_{false};       // Only set the key if it does not already exist.

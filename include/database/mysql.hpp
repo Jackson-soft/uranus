@@ -4,11 +4,9 @@
 #include "database/dsn.hpp"
 
 #include <cstdint>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <mysql.h>
-#include <span>
 #include <string>
 #include <string_view>
 #include <utility>

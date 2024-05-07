@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <pqxx/pqxx>
-#include <string>
 #include <string_view>
 
 // PostgreSQL

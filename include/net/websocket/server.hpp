@@ -2,7 +2,6 @@
 
 #include "connection.hpp"
 #include "net/base/io_pool.hpp"
-#include "utils/log.hpp"
 
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/io_context.hpp>
@@ -10,12 +9,9 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/use_awaitable.hpp>
 #include <cstdint>
-#include <functional>
 #include <memory>
-#include <string>
 #include <string_view>
 #include <thread>
-#include <vector>
 
 namespace uranus::websocket {
 class Server {

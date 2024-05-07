@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 
 project(uranus LANGUAGES CXX)
 
@@ -24,7 +24,6 @@ find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
 find_package(ffmpeg REQUIRED)
-find_package(libmysqlclient REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
@@ -36,7 +35,6 @@ target_include_directories(
     ${nlohmann_json_INCLUDE_DIRS}
     ${spdlog_INCLUDE_DIRS}
     ${ffmpeg_INCLUDE_DIRS}
-    ${libmysqlclient_INCLUDE_DIRS}
     ${libpqxx_INCLUDE_DIRS})
 target_link_libraries(
     ${PROJECT_NAME}
@@ -46,7 +44,6 @@ target_link_libraries(
     ${nlohmann_json_LIBRARIES}
     ${spdlog_LIBRARIES}
     ${ffmpeg_LIBRARIES}
-    ${libmysqlclient_LIBRARIES}
     ${libpqxx_LIBRARIES})
 
 enable_testing()

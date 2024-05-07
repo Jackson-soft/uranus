@@ -4,7 +4,6 @@
 #include "packet.hpp"
 
 #include <any>
-#include <array>
 #include <asio.hpp>
 #include <cstddef>
 #include <cstdint>

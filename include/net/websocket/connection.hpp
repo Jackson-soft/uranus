@@ -11,8 +11,6 @@
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
-#include <functional>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -94,7 +92,7 @@ private:
         }
     }
 
-    void                                                      callback() {}
+    void callback() {}
 
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
     boost::asio::steady_timer                                 timer_;

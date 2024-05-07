@@ -15,8 +15,6 @@
 #include <boost/beast/websocket/stream.hpp>
 #include <boost/system/error_code.hpp>
 #include <chrono>
-#include <functional>
-#include <iostream>
 #include <queue>
 #include <string>
 #include <string_view>

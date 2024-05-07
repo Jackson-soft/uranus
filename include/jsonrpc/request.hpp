@@ -24,7 +24,6 @@ this could cause confusion in handling.
 #include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
-#include <valarray>
 #include <variant>
 
 namespace uranus::jsonrpc {
