@@ -23,7 +23,6 @@ find_package(Boost REQUIRED)
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(libpqxx REQUIRED)
-find_package(ffmpeg REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
@@ -34,7 +33,6 @@ target_include_directories(
     ${fmt_INCLUDE_DIRS}
     ${nlohmann_json_INCLUDE_DIRS}
     ${spdlog_INCLUDE_DIRS}
-    ${ffmpeg_INCLUDE_DIRS}
     ${libpqxx_INCLUDE_DIRS})
 target_link_libraries(
     ${PROJECT_NAME}
@@ -43,7 +41,6 @@ target_link_libraries(
     ${fmt_LIBRARIES}
     ${nlohmann_json_LIBRARIES}
     ${spdlog_LIBRARIES}
-    ${ffmpeg_LIBRARIES}
     ${libpqxx_LIBRARIES})
 
 enable_testing()
@@ -59,8 +56,6 @@ target_include_directories(
     ${Boost_INCLUDE_DIRS}
     ${fmt_INCLUDE_DIRS}
     ${nlohmann_json_INCLUDE_DIRS}
-    ${ffmpeg_INCLUDE_DIRS}
-    ${libmysqlclient_INCLUDE_DIRS}
     ${libpqxx_INCLUDE_DIRS})
 
 target_link_libraries(
