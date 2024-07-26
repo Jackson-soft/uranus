@@ -23,7 +23,7 @@ Either the result member or error member MUST be included, but both members MUST
 
 #include "version.hpp"
 
-#include <fmt/core.h>
+#include <format>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
@@ -74,7 +74,7 @@ public:
     // lsp 字符串
     auto LspString() -> std::string {
         auto message = String();
-        auto header  = fmt::format("Content-Length:{}\r\n\r\n", message.size());
+        auto header  = std::format("Content-Length:{}\r\n\r\n", message.size());
 
         header.append(message);
 
