@@ -57,7 +57,7 @@ public:
         if (id_.index() == 0) {
             result["id"] = std::get<int>(id_);
         } else if (id_.index() == 1) {
-            result["id"] = std::get<int>(id_);
+            result["id"] = std::get<std::string>(id_);
         } else {
             result["id"] = nullptr;
         }

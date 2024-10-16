@@ -62,7 +62,7 @@ public:
         return method_;
     }
 
-    auto Version() -> std::string {
+    auto Version() -> const std::string & {
         return jsonrpc_;
     }
 
@@ -72,7 +72,7 @@ public:
 
 private:
     // A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
-    std::string jsonrpc_;
+    std::string jsonrpc_{Version()};
 
     /*
     A String containing the name of the method to be invoked. Method names that begin with the word rpc followed by a

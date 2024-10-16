@@ -15,11 +15,11 @@ public:
         return instance;
     }
 
-    void Initalize(std::string_view level   = "info",
+    void Initalize(std::string_view file    = "logs/rotating.log",
+                   std::string_view level   = "info",
+                   std::string_view name    = "app",
                    std::size_t      maxSize = static_cast<std::size_t>(1024 * 1024 * 20),
-                   std::string_view file    = "logs/rotating.log",
-                   std::size_t      maxFile = 3,
-                   std::string_view name    = "app") {
+                   std::size_t      maxFile = 3) {
         // Create a file rotating logger with 20mb size max and 3 rotated files.
         log_ = spdlog::rotating_logger_mt(name.data(), file.data(), maxSize, maxFile);
         auto              lvl{spdlog::level::info};

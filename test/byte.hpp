@@ -4,18 +4,18 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <cstddef>
-#include <cstdio>
-#include <fmt/core.h>
+#include <print>
+#include <utility>
 #include <vector>
 
 SCENARIO("byte read and write", "byte") {
     GIVEN("socket byte test") {
         WHEN("test byte and char") {
             std::byte myByte{51};
-            fmt::print(stdout, "myByte is {}, int is {}\n", myByte, std::to_integer<int>(myByte));
+            std::print("myByte is {}, int is {}\n", std::to_underlying(myByte), std::to_integer<int>(myByte));
 
             char myChar{51};
-            fmt::print(stdout, "myChar is {}\n", myChar);
+            std::print("myChar is {}\n", myChar);
             REQUIRE(1 == 1);
         }
     }

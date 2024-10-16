@@ -5,7 +5,7 @@
 
 namespace uranus::utils {
 template<typename T>
-requires std::is_arithmetic<T>::value
+requires std::is_arithmetic_v<T>
 inline auto ReadByte(std::vector<char> &data) -> T {
     T tmp{0};
     if (data.empty()) {
@@ -20,7 +20,7 @@ inline auto ReadByte(std::vector<char> &data) -> T {
 }
 
 template<typename T>
-requires std::is_arithmetic<T>::value
+requires std::is_arithmetic_v<T>
 inline auto WriteByte(const T &data) -> std::vector<char> {
     std::vector<char> tmp{};
     auto              size = sizeof(T);

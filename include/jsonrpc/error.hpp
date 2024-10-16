@@ -30,7 +30,6 @@ The value of this member is defined by the Server (e.g. detailed error informati
 
 #include <cstdint>
 #include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <string_view>
 
@@ -50,7 +49,7 @@ public:
 
     explicit Error(ErrorCodes code) : Error(code, "") {}
 
-    Error(ErrorCodes code, std::string_view message) : code_{code}, message_{message} {}
+    Error(ErrorCodes code, std::string_view message) : code_(code), message_(message) {}
 
     ~Error() = default;
 
