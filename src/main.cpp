@@ -5,14 +5,13 @@
 */
 
 #include "main.hpp"
+#include "utils/log.hpp"
 
 #include <algorithm>
 #include <array>
 #include <cstdlib>
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include <fmt/ranges.h>
 #include <map>
+#include <print>
 #include <string>
 #include <vector>
 
@@ -24,17 +23,23 @@ auto main() -> int {
     svr.Run();
     */
 
+    uranus::utils::LogHelper::Instance().Initalize("logs/rotating.log");
+
+    uranus::utils::LogHelper::Instance().Info("hello world");
+    uranus::utils::LogHelper::Instance().Info("hello world {}", "info");
+    uranus::utils::LogHelper::Instance().Error("hello world {}", "error");
+
     std::vector<int>   vInt{2, 3, 45, 65};
     std::array<int, 4> aInt{0, 9, 8, 8};
 
-    fmt::print("before vInt {}, aInt {}\n", vInt, aInt);
+    std::print("before vInt {}, aInt {}\n", vInt, aInt);
 
     std::copy_n(vInt.begin(), 4, aInt.begin());
-    fmt::print("copy_n vInt {}, aInt {}\n", vInt, aInt);
+    std::print("copy_n vInt {}, aInt {}\n", vInt, aInt);
 
     std::move(vInt.begin(), vInt.begin() + 4, aInt.begin());
-    fmt::print("move vInt {}, aInt {}\n", vInt, aInt);
-    fmt::print("ffff {}\n", "soooooooo");
+    std::print("move vInt {}, aInt {}\n", vInt, aInt);
+    std::print("ffff {}\n", "soooooooo");
 
     std::map<std::string, std::string> vMap{{"1", "1->1"}};
 
