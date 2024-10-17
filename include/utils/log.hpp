@@ -42,7 +42,7 @@ public:
     }
 
     template<typename... T>
-    void Error(fmt::format_string<T...> fmt, T &&...args) {
+    void Error(std::string_view fmt, T &&...args) {
         log_->error(fmt, std::forward<T>(args)...);
     }
 
@@ -52,7 +52,7 @@ public:
     }
 
     template<typename... T>
-    void Info(fmt::format_string<T...> fmt, T &&...args) {
+    void Info(std::string_view fmt, T &&...args) {
         log_->info(fmt, std::forward<T>(args)...);
     }
 
