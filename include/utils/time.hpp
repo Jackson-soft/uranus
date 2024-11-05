@@ -2,32 +2,20 @@
 
 #include <chrono>
 #include <cstdint>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
+#include <format>
 #include <string>
 
 namespace uranus::utils {
-// 时间操作
-inline auto NowTime() -> std::tm {
-    std::time_t now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    return *std::localtime(&now_c);
-}
-
 // 获取当前时间 格式： YYYY-MM-DD HH:MM:SS
 inline auto CurrentTime() -> std::string {
-    auto              now = NowTime();
-    std::stringstream ss;
-    ss << std::put_time(&now, "%F %T");
-    return ss.str();
+    auto now = std::chrono::system_clock::now();
+    return std::format("{0:%Y-%m-%d %H:%M:%S}", now);
 }
 
 // 获取当前日期 格式：YYYY-MM-DD
 inline auto CurrentDay() -> std::string {
-    auto              now = NowTime();
-    std::stringstream ss;
-    ss << std::put_time(&now, "%F");
-    return ss.str();
+    auto now = std::chrono::system_clock::now();
+    return std::format("{0:%F}", now);
 }
 
 // 获取当前时间戳(秒精度)
