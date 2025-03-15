@@ -1,5 +1,5 @@
 [requires]
-boost/1.86.0
+boost/1.87.0
 nlohmann_json/[>=3.11.2]
 spdlog/[>=1.11.0]
 libpqxx/[>=7.7.4]
@@ -15,4 +15,5 @@ cmake_layout
 [options]
 *:shared=False
 boost/*:without_cobalt=False
+boost/*:without_stacktrace=True
 spdlog/*:use_std_fmt=True

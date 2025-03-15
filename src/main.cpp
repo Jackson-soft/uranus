@@ -5,6 +5,7 @@
 */
 
 #include "main.hpp"
+
 #include "utils/log.hpp"
 
 #include <algorithm>
