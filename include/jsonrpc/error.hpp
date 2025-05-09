@@ -80,7 +80,7 @@ private:
     A String providing a short description of the error.
     The message SHOULD be limited to a concise single sentence.
     */
-    std::string message_;
+    std::string message_{};
 
     /*
     A Primitive or Structured value that contains additional information about the error.

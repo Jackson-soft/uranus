@@ -8,3 +8,4 @@ cmake-build-debug/
 CMakeLists.txt.user
 CMakeUserPresets.json
 logs
+*.cmake
