@@ -17,7 +17,7 @@ public:
     ThreadPool() = default;
 
     // the constructor just launches some amount of workers
-    explicit ThreadPool(size_t threads) {
+    explicit ThreadPool(const size_t threads) {
         for (size_t i = 0; i < threads; ++i) {
             workers_.emplace_back([this] {
                 for (;;) {
@@ -80,10 +80,10 @@ public:
     auto operator=(const ThreadPool &) -> ThreadPool & = delete;
 
 private:
-    std::vector<std::thread>          workers_;  // need to keep track of threads so we can join them
-    std::queue<std::function<void()>> tasks_;    // the task queue
-    std::mutex                        mutex_;
-    std::condition_variable           condition_;  // synchronization
+    std::vector<std::thread>          workers_{};  // need to keep track of threads so we can join them
+    std::queue<std::function<void()>> tasks_{};    // the task queue
+    std::mutex                        mutex_{};
+    std::condition_variable           condition_{};  // synchronization
     bool                              stop_{false};
 };
 }  // namespace uranus::utils

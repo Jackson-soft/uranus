@@ -47,9 +47,9 @@ class Error {
 public:
     Error() = default;
 
-    explicit Error(ErrorCodes code) : Error(code, "") {}
+    explicit Error(const ErrorCodes code) : Error(code, "") {}
 
-    Error(ErrorCodes code, std::string_view message) : code_(code), message_(message) {}
+    Error(const ErrorCodes code, const std::string_view message) : code_(code), message_(message) {}
 
     ~Error() = default;
 

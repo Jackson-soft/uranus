@@ -35,7 +35,7 @@ class Response {
 public:
     Response() = default;
 
-    explicit Response(std::string_view id) : id_(id.data()) {}
+    explicit Response(const std::string_view id) : id_(id.data()) {}
 
     explicit Response(int id) : id_(id) {}
 
@@ -69,16 +69,6 @@ public:
         }
 
         return result.dump(-1, ' ', true, nlohmann::detail::error_handler_t::ignore);
-    }
-
-    // lsp 字符串
-    auto LspString() -> std::string {
-        auto message = String();
-        auto header  = std::format("Content-Length:{}\r\n\r\n", message.size());
-
-        header.append(message);
-
-        return std::move(header);
     }
 
 private:

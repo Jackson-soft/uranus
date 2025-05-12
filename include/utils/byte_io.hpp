@@ -12,7 +12,7 @@ inline auto ReadByte(std::vector<char> &data) -> T {
         return tmp;
     }
 
-    auto size = sizeof(T);
+    const auto size = sizeof(T);
     for (auto i = 0; i < size; ++i) {
         tmp |= data.at(i) << ((size - 1 - i) * 8);
     }
@@ -23,7 +23,7 @@ template<typename T>
 requires std::is_arithmetic_v<T>
 inline auto WriteByte(const T &data) -> std::vector<char> {
     std::vector<char> tmp{};
-    auto              size = sizeof(T);
+    const auto              size = sizeof(T);
 
     for (auto i = 0; i < size; ++i) {
         tmp.emplace_back(data >> ((size - 1 - i) * 8));

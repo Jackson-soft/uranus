@@ -21,10 +21,10 @@ inline auto CurrentDay() -> std::string {
 // 获取当前时间戳(秒精度)
 inline auto UnixTime() -> std::int64_t {
     // 获取当前时间点
-    auto duration = std::chrono::system_clock::now().time_since_epoch();
+    const auto duration = std::chrono::system_clock::now().time_since_epoch();
 
     // 将时间点转换为秒数
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+    const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
 
     return seconds;
 }
@@ -32,10 +32,10 @@ inline auto UnixTime() -> std::int64_t {
 // 获取当前时间戳(毫秒精度)
 inline auto UnixMilli() -> std::int64_t {
     // 获取当前时间点
-    auto duration = std::chrono::system_clock::now().time_since_epoch();
+    const auto duration = std::chrono::system_clock::now().time_since_epoch();
 
     // 将时间点转换为毫秒数
-    auto seconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    const auto seconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
     return seconds;
 }

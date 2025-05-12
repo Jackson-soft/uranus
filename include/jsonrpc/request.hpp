@@ -79,7 +79,7 @@ private:
     period character (U+002E or ASCII 46) are reserved for rpc-internal methods and extensions and MUST NOT be used for
     anything else.
     */
-    std::string method_;
+    std::string method_{};
 
     /*
     An identifier established by the Client that MUST contain a String, Number, or NULL value if included. If it is not

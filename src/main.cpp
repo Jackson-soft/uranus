@@ -24,7 +24,7 @@ auto main() -> int {
     svr.Run();
     */
 
-    uranus::utils::LogHelper::Instance().Initalize("logs/rotating.log");
+    uranus::utils::LogHelper::Instance().Initialize("logs/rotating.log");
 
     uranus::utils::LogHelper::Instance().Info("hello world");
     uranus::utils::LogHelper::Instance().Info("hello world {}", "info");

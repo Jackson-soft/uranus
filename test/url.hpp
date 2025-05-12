@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/url.hpp"
+#include "../include/net/base/url.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 

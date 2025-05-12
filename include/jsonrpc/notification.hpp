@@ -14,9 +14,9 @@
 namespace uranus::jsonrpc {
 class Notification {
 public:
-    explicit Notification(std::string_view method) : method_(method) {}
+    explicit Notification(const std::string_view method) : method_(method) {}
 
-    Notification(std::string_view method, nlohmann::json params) : method_(method), params_(std::move(params)) {}
+    Notification(const std::string_view method, nlohmann::json params) : method_(method), params_(std::move(params)) {}
 
     ~Notification() = default;
 
@@ -34,23 +34,13 @@ public:
         return result.dump(-1, ' ', true, nlohmann::detail::error_handler_t::ignore);
     }
 
-    // lsp 字符串
-    auto LspString() -> std::string {
-        auto message = String();
-        auto header  = std::format("Content-Length:{}\r\n\r\n", message.size());
-
-        header.append(message);
-
-        return std::move(header);
-    }
-
 private:
-    std::string jsonrpc_{Version()};
-
     /**
      * 待触发的 method
      */
     std::string method_;
+
+    std::string jsonrpc_{Version()};
 
     /**
      * 通知的参数
