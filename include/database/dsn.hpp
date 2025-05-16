@@ -1,7 +1,6 @@
 #pragma once
 
 #include <charconv>
-#include <cstdint>
 #include <map>
 #include <string>
 #include <string_view>
@@ -23,8 +22,7 @@ public:
         }
 
         std::string_view::size_type position{0};
-        auto                        driver = url.find("://");
-        if (driver != std::string_view::npos) {
+        if (const auto driver = url.find("://"); driver != std::string_view::npos) {
             driver_  = url.substr(0, driver);
             position = driver + 3;
         } else {
@@ -38,7 +36,7 @@ public:
         password_    = infoStr.substr(user + 1);
 
         // pgsql://user:pass@tcp(localhost:5555)/dbname?aa=bb
-        auto address = url.find_last_of('?');
+        const auto address = url.find_last_of('?');
         auto addrStr = url.substr(info + 1, address - info - 1);
 
         std::string_view::size_type schema{0};
@@ -111,13 +109,13 @@ public:
     }
 
 private:
-    std::string                        driver_;
-    std::string                        user_;
-    std::string                        password_;
-    std::string                        protocol_;
-    std::string                        host_;
+    std::string                        driver_{};
+    std::string                        user_{};
+    std::string                        password_{};
+    std::string                        protocol_{};
+    std::string                        host_{};
     std::uint32_t                      port_{};
-    std::string                        schema_;
-    std::map<std::string, std::string> parameters_;
+    std::string                        schema_{};
+    std::map<std::string, std::string> parameters_{};
 };
 }  // namespace uranus::database

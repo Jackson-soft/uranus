@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unistd.h>
+#include <stdlib.h>
 
 namespace uranus::utils {
 // 守护进程

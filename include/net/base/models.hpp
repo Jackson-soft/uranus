@@ -11,7 +11,7 @@ namespace uranus::net {
 struct Message {
     Message() : Message(0, "") {}
 
-    Message(const std::uint64_t code, std::string_view msg, nlohmann::json data = nlohmann::json::object())
+    Message(const std::uint64_t code, const std::string_view msg, nlohmann::json data = nlohmann::json::object())
         : code_(code), message_(msg), data_(std::move(data)) {}
 
     std::uint64_t  code_;

@@ -8,14 +8,14 @@
 
 // PostgreSQL
 namespace uranus::database {
-const std::uint32_t pgPort = 5432;
+constexpr std::uint32_t pgPort = 5432;
 
 class Postgre {
 public:
     Postgre()  = default;
     ~Postgre() = default;
 
-    auto Connect(std::string_view url) -> bool {
+    auto Connect(const std::string_view url) const -> bool {
         if (url.empty()) {
             return false;
         }
@@ -28,7 +28,7 @@ public:
         return conn_->is_open();
     }
 
-    void Insert(std::string_view sql) {
+    void Insert(const std::string_view sql) const {
         if (sql.empty()) {
             return;
         }
@@ -45,6 +45,6 @@ public:
     }
 
 private:
-    std::unique_ptr<pqxx::connection> conn_;
+    std::unique_ptr<pqxx::connection> conn_{std::make_unique<pqxx::connection>()};
 };
 }  // namespace uranus::database

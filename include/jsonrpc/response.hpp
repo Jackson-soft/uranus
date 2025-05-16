@@ -23,7 +23,6 @@ Either the result member or error member MUST be included, but both members MUST
 
 #include "version.hpp"
 
-#include <format>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
@@ -41,12 +40,27 @@ public:
 
     ~Response() = default;
 
-    void AddResult(nlohmann::json result) {
+    void Reset() {
+        jsonrpc_ = Version();
+        id_      = nullptr;
+        result_  = nlohmann::json{};
+        error_   = nlohmann::json{};
+    }
+
+    void SetResult(nlohmann::json result) {
         result_ = std::move(result);
     }
 
-    void AddError(nlohmann::json error) {
+    void SetError(nlohmann::json error) {
         error_ = std::move(error);
+    }
+
+    void SetId(int id) {
+        id_.emplace<int>(id);
+    }
+
+    void SetId(const std::string_view id) {
+        id_.emplace<std::string>(id);
     }
 
     auto String() -> std::string {

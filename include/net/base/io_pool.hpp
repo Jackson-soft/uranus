@@ -14,7 +14,7 @@
 namespace uranus::net {
 class IoPool : public boost::noncopyable {
 public:
-    explicit IoPool(std::uint32_t size = std::thread::hardware_concurrency()) {
+    explicit IoPool(const std::uint32_t size = std::thread::hardware_concurrency()) {
         ioContexts_.reserve(size);
         for (std::uint32_t i = 0; i < size; i++) {
             auto ioContext = std::make_shared<boost::asio::io_context>();
@@ -47,7 +47,7 @@ public:
 
     void Stop() {
         works_.clear();
-        for (auto &it : ioContexts_) {
+        for (const auto &it : ioContexts_) {
             it->stop();
         }
     }
@@ -63,8 +63,8 @@ public:
     }
 
 private:
-    std::vector<std::shared_ptr<boost::asio::io_context>> ioContexts_;
-    std::list<boost::asio::any_io_executor>               works_;
+    std::vector<std::shared_ptr<boost::asio::io_context>> ioContexts_{};
+    std::list<boost::asio::any_io_executor>               works_{};
     std::uint32_t                                         next_{0};
 };
 }  // namespace uranus::net

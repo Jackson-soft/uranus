@@ -1,19 +1,19 @@
 #pragma once
 
-#include "../include/net/base/url.hpp"
+#include "net/base/uri.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 
 SCENARIO("url test") {
     GIVEN("http url test") {
-        const auto        *str{"http://example.org/absolute/URI/with/absolute/path/to/resource.txt"};
-        uranus::utils::URL url;
+        const auto      *str{"http://example.org/absolute/URI/with/absolute/path/to/resource.txt"};
+        uranus::net::URI url;
         CHECK(url.Parse(str));
     }
 
     GIVEN("ftp url test") {
-        const auto        *str{"ftp://example.org/resource.txt"};
-        uranus::utils::URL url;
+        const auto      *str{"ftp://example.org/resource.txt"};
+        uranus::net::URI url;
         CHECK(url.Parse(str));
     }
 }

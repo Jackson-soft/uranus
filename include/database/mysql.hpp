@@ -1,9 +1,8 @@
 #pragma once
 
-#include "database/database.hpp"
 #include "database/dsn.hpp"
+#include "database/database.hpp"
 
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <mysql.h>
@@ -14,16 +13,16 @@
 namespace uranus::database {
 const std::uint32_t mysqlPort = 3306;
 
-class MySQL : public DataBase {
+class MySQL : public Database {
 public:
     MySQL() : mysql_(std::make_unique<MYSQL>()) {}
 
-    ~MySQL() {
+    ~MySQL() override {
         auto *ptr = mysql_.release();
         ::mysql_close(ptr);
     }
 
-    auto Connect(std::string_view dsnStr) -> bool override {
+    auto Connect(const std::string_view dsnStr) -> bool override {
         if (dsnStr.empty()) {
             return false;
         }

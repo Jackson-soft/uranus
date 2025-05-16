@@ -44,15 +44,11 @@ SCENARIO("json rpc", "[response]") {
         result["data"] = "sdfsdf";
         result["list"] = {1, 0, 2};
 
-        response.AddResult(result);
+        response.SetResult(result);
 
         auto str = response.String();
 
         CHECK_FALSE(str.empty());
-
-        auto lsp = response.LspString();
-
-        CHECK_FALSE(lsp.empty());
     }
 
     GIVEN("response error") {
@@ -60,14 +56,11 @@ SCENARIO("json rpc", "[response]") {
 
         uranus::jsonrpc::Error error(uranus::jsonrpc::ErrorCodes::ParseError, "this is a error");
 
-        response.AddError(error.Json());
+        response.SetError(error.Json());
 
         auto str = response.String();
 
         CHECK_FALSE(str.empty());
-
-        auto lsp = response.LspString();
-        CHECK_FALSE(lsp.empty());
     }
 }
 
@@ -78,9 +71,6 @@ SCENARIO("json rpc", "[notification]") {
         auto str = notice.String();
 
         CHECK_FALSE(str.empty());
-
-        auto lsp = notice.LspString();
-        CHECK_FALSE(lsp.empty());
     }
 
     GIVEN("notification params") {
@@ -92,8 +82,5 @@ SCENARIO("json rpc", "[notification]") {
         auto str = notice.String();
 
         CHECK_FALSE(str.empty());
-
-        auto lsp = notice.LspString();
-        CHECK_FALSE(lsp.empty());
     }
 }

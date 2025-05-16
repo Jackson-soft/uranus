@@ -12,7 +12,7 @@ public:
         return instance;
     }
 
-    auto Initalize(std::string_view dsn) -> bool {
+    auto Initialize(std::string_view dsn) -> bool {
         std::call_once(flag_, [this]() {
             this->create();
         });

@@ -4,10 +4,10 @@
 
 // database interface
 namespace uranus::database {
-class DataBase {
+class Database {
 public:
-    DataBase()  = default;
-    ~DataBase() = default;
+    Database()          = default;
+    virtual ~Database() = default;
 
     virtual auto Connect(std::string_view dsn) -> bool = 0;
     virtual auto Close() -> bool                       = 0;

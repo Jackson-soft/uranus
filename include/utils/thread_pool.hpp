@@ -50,7 +50,7 @@ public:
 
         auto task = std::make_shared<std::packaged_task<ReturnType>>(func);
 
-        std::function<void()> warpper_func = [task]() {
+        std::function<void()> wrapFunc = [task]() {
             (*task)();
         };
         ReturnType res = task->get_future();
@@ -58,7 +58,7 @@ public:
             throw std::runtime_error("enqueue on stopped ThreadPool");
         }
         const std::unique_lock<std::mutex> lock(mutex_);
-        tasks_.emplace(warpper_func);
+        tasks_.emplace(wrapFunc);
         condition_.notify_one();
         return res;
     }

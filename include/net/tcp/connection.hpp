@@ -13,8 +13,6 @@
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/asio/write.hpp>
 #include <chrono>
-#include <functional>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
