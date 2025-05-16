@@ -56,11 +56,19 @@ public:
     }
 
     void SetId(int id) {
-        id_.emplace<int>(id);
+        if (id >0 ) {
+            id_.emplace<int>(id);
+        }
     }
 
     void SetId(const std::string_view id) {
-        id_.emplace<std::string>(id);
+        if (!id.empty()) {
+            id_.emplace<std::string>(id);
+        }
+    }
+
+    void SetId(const std::variant<int, std::string, void *> &id) {
+        id_ = id;
     }
 
     auto String() -> std::string {
