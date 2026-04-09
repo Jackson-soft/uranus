@@ -19,12 +19,52 @@ SCENARIO("json rpc", "[request]") {
         CHECK(request.Method() == "subtract");
         CHECK(request.Version() == "2.0");
 
-        auto id = request.Id();
-        if (id.index() == 0) {
+        auto id = request.GetId();
+        if (std::holds_alternative<int>(id)) {
             CHECK(std::get<int>(id) == 1);
-        } else if (id.index() == 1) {
+        } else if (std::holds_alternative<std::string>(id)) {
             CHECK(std::get<std::string>(id) == "1");
         }
+    }
+
+    GIVEN("request with object params") {
+        auto str = R"({"jsonrpc": "2.0", "method": "update", "params": {"key": "value"}, "id": "abc"})";
+        CHECK(request.Parse(str));
+        CHECK(request.Params().is_object());
+        CHECK(std::holds_alternative<std::string>(request.GetId()));
+    }
+
+    GIVEN("request with array params") {
+        auto str = R"({"jsonrpc": "2.0", "method": "update", "params": [1, 2, 3], "id": 1})";
+        CHECK(request.Parse(str));
+        CHECK(request.Params().is_array());
+    }
+
+    GIVEN("invalid json") {
+        auto str = R"({not valid json)";
+        CHECK_FALSE(request.Parse(str));
+        CHECK_FALSE(request.ErrorMessage().empty());
+    }
+
+    GIVEN("missing jsonrpc field") {
+        auto str = R"({"method": "test", "id": 1})";
+        CHECK_FALSE(request.Parse(str));
+    }
+
+    GIVEN("missing method field") {
+        auto str = R"({"jsonrpc": "2.0", "id": 1})";
+        CHECK_FALSE(request.Parse(str));
+    }
+
+    GIVEN("invalid params type") {
+        auto str = R"({"jsonrpc": "2.0", "method": "test", "params": "bad", "id": 1})";
+        CHECK_FALSE(request.Parse(str));
+    }
+
+    GIVEN("notification (no id)") {
+        auto str = R"({"jsonrpc": "2.0", "method": "notify"})";
+        CHECK(request.Parse(str));
+        CHECK(request.IsNotification());
     }
 }
 
@@ -51,6 +91,15 @@ SCENARIO("json rpc", "[response]") {
         CHECK_FALSE(str.empty());
     }
 
+    GIVEN("response with id=0") {
+        uranus::jsonrpc::Response response(0);
+        response.SetResult(nlohmann::json("ok"));
+
+        auto str    = response.String();
+        auto parsed = nlohmann::json::parse(str);
+        CHECK(parsed["id"] == 0);
+    }
+
     GIVEN("response error") {
         uranus::jsonrpc::Response response;
 
@@ -61,6 +110,23 @@ SCENARIO("json rpc", "[response]") {
         auto str = response.String();
 
         CHECK_FALSE(str.empty());
+    }
+}
+
+SCENARIO("json rpc", "[error]") {
+    GIVEN("error with default message") {
+        uranus::jsonrpc::Error error(uranus::jsonrpc::ErrorCodes::MethodNotFound);
+        CHECK(error.Message() == "Method not found");
+        CHECK(error.Code() == uranus::jsonrpc::ErrorCodes::MethodNotFound);
+    }
+
+    GIVEN("error with data") {
+        uranus::jsonrpc::Error error(uranus::jsonrpc::ErrorCodes::InternalError, "something broke");
+        error.SetData(nlohmann::json{{"detail", "stack trace"}});
+
+        auto j = error.Json();
+        CHECK(j.contains("data"));
+        CHECK(j["data"]["detail"] == "stack trace");
     }
 }
 
@@ -82,5 +148,25 @@ SCENARIO("json rpc", "[notification]") {
         auto str = notice.String();
 
         CHECK_FALSE(str.empty());
+    }
+
+    GIVEN("parse notification") {
+        auto str    = R"({"jsonrpc": "2.0", "method": "update", "params": [1, 2, 3]})";
+        auto notice = uranus::jsonrpc::Notification::Parse(str);
+        CHECK(notice.has_value());
+        CHECK(notice->Method() == "update");
+        CHECK(notice->Params().is_array());
+    }
+
+    GIVEN("parse notification with id should fail") {
+        auto str    = R"({"jsonrpc": "2.0", "method": "update", "id": 1})";
+        auto notice = uranus::jsonrpc::Notification::Parse(str);
+        CHECK_FALSE(notice.has_value());
+    }
+
+    GIVEN("parse invalid notification") {
+        auto str    = R"({bad json)";
+        auto notice = uranus::jsonrpc::Notification::Parse(str);
+        CHECK_FALSE(notice.has_value());
     }
 }

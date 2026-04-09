@@ -41,24 +41,24 @@ public:
     }
 
     // add new work item to the pool
-    template<class Function, class... Args, typename ReturnType = std::invoke_result_t<Function &&, Args &&...>>
+    template<class Function, class... Args>
     requires std::invocable<Function, Args...>
-    auto Enqueue(Function &&fun, Args &&...args) -> std::future<ReturnType> {
-        std::function<ReturnType> func
-            = std::bind(std::forward<Function>(fun),
-                        std::forward<Args>(args)...);  // 连接函数和参数定义，特殊函数类型，避免左右值错误
+    auto Enqueue(Function &&fun, Args &&...args) -> std::future<std::invoke_result_t<Function, Args...>> {
+        using ReturnType = std::invoke_result_t<Function, Args...>;
 
-        auto task = std::make_shared<std::packaged_task<ReturnType>>(func);
+        auto task = std::make_shared<std::packaged_task<ReturnType()>>(
+            std::bind(std::forward<Function>(fun), std::forward<Args>(args)...));
 
-        std::function<void()> wrapFunc = [task]() {
-            (*task)();
-        };
-        ReturnType res = task->get_future();
-        if (stop_) {
-            throw std::runtime_error("enqueue on stopped ThreadPool");
+        auto res = task->get_future();
+        {
+            const std::unique_lock<std::mutex> lock(mutex_);
+            if (stop_) {
+                throw std::runtime_error("enqueue on stopped ThreadPool");
+            }
+            tasks_.emplace([task]() {
+                (*task)();
+            });
         }
-        const std::unique_lock<std::mutex> lock(mutex_);
-        tasks_.emplace(wrapFunc);
         condition_.notify_one();
         return res;
     }

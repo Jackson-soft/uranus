@@ -4,9 +4,8 @@
 
 #include "version.hpp"
 
-#include <format>
 #include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,12 +19,50 @@ public:
 
     ~Notification() = default;
 
-    auto String() -> std::string {
+    // 从 JSON 字符串解析 notification（无 id 的请求）
+    static auto Parse(std::string_view msg) -> std::optional<Notification> {
+        nlohmann::json data;
+        try {
+            data = nlohmann::json::parse(msg);
+        } catch (const nlohmann::json::parse_error &) {
+            return std::nullopt;
+        }
+
+        if (!data.is_object())
+            return std::nullopt;
+
+        if (!data.contains("jsonrpc") || data["jsonrpc"] != kVersion)
+            return std::nullopt;
+
+        if (!data.contains("method") || !data["method"].is_string())
+            return std::nullopt;
+
+        // notification 不应包含 id
+        if (data.contains("id"))
+            return std::nullopt;
+
+        auto method = data["method"].get<std::string>();
+
+        if (data.contains("params") && (data["params"].is_object() || data["params"].is_array())) {
+            return Notification(method, data["params"]);
+        }
+
+        return Notification(method);
+    }
+
+    [[nodiscard]] auto Method() const -> const std::string & {
+        return method_;
+    }
+
+    [[nodiscard]] auto Params() const -> const nlohmann::json & {
+        return params_;
+    }
+
+    [[nodiscard]] auto String() const -> std::string {
         nlohmann::json result;
 
-        result["jsonrpc"] = jsonrpc_;
-
-        result["method"] = method_;
+        result["jsonrpc"] = kVersion;
+        result["method"]  = method_;
 
         if (!params_.empty()) {
             result["params"] = params_;
@@ -35,16 +72,7 @@ public:
     }
 
 private:
-    /**
-     * 待触发的 method
-     */
-    std::string method_;
-
-    std::string jsonrpc_{Version()};
-
-    /**
-     * 通知的参数
-     */
+    std::string    method_;
     nlohmann::json params_{};
 };
 }  // namespace uranus::jsonrpc

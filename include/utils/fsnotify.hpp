@@ -12,6 +12,15 @@ class FsNotify {
 public:
     FsNotify() = default;
 
+    ~FsNotify() {
+        if (fd_ >= 0) {
+            ::close(fd_);
+        }
+    }
+
+    FsNotify(const FsNotify &)                     = delete;
+    auto operator=(const FsNotify &) -> FsNotify & = delete;
+
     auto Add() -> bool {
         return false;
     }
@@ -32,15 +41,15 @@ public:
 private:
     auto init() -> bool {
         fd_ = ::fanotify_init(FAN_CLOEXEC | FAN_CLASS_NOTIF | FAN_NONBLOCK, 0);
-        return fd_ > 0;
+        return fd_ >= 0;
     }
 
-    auto mark(std::string_view file) -> bool {
-        auto ret = ::fanotify_mark(fd_, FAN_MARK_ADD, FAN_CLOSE_WRITE, AT_FDCWD, file.data());
+    auto mark(const std::string &file) -> bool {
+        auto ret = ::fanotify_mark(fd_, FAN_MARK_ADD, FAN_CLOSE_WRITE, AT_FDCWD, file.c_str());
 
-        return ret > 0;
+        return ret >= 0;
     }
 
-    int fd_;
+    int fd_{-1};
 };
 }  // namespace uranus::utils
