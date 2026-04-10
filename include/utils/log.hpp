@@ -21,7 +21,7 @@ public:
                     const std::size_t            maxSize = static_cast<std::size_t>(1024 * 1024 * 20),
                     const std::size_t            maxFile = 3) {
         // Create a file rotating logger with 20mb size max and 3 rotated files.
-        log_ = spdlog::rotating_logger_mt(name.data(), file, maxSize, maxFile);
+        log_ = spdlog::rotating_logger_mt(name.data(), file.string(), maxSize, maxFile);
         log_->set_level(spdlog::level::from_str(std::string(level)));
     }
 
