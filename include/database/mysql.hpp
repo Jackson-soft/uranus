@@ -1,7 +1,7 @@
 #pragma once
 
-#include "database/dsn.hpp"
 #include "database/database.hpp"
+#include "database/dsn.hpp"
 
 #include <map>
 #include <memory>

@@ -21,82 +21,85 @@ public:
             return false;
         }
 
-        std::string_view::size_type position{0};
-        if (const auto driver = url.find("://"); driver != std::string_view::npos) {
-            driver_  = url.substr(0, driver);
-            position = driver + 3;
-        } else {
-            position = 0;
+        auto remaining = url;
+
+        // 解析 driver (scheme)
+        if (const auto pos = remaining.find("://"); pos != std::string_view::npos) {
+            driver_   = remaining.substr(0, pos);
+            remaining = remaining.substr(pos + 3);
         }
 
-        auto info    = url.find_last_of('@');
-        auto infoStr = url.substr(position, info - position);
-        auto user    = infoStr.find_first_of(':');
-        user_        = infoStr.substr(0, user);
-        password_    = infoStr.substr(user + 1);
+        // 解析 user:password@
+        if (const auto at = remaining.find_last_of('@'); at != std::string_view::npos) {
+            auto userInfo = remaining.substr(0, at);
+            remaining     = remaining.substr(at + 1);
 
-        // pgsql://user:pass@tcp(localhost:5555)/dbname?aa=bb
-        const auto address = url.find_last_of('?');
-        auto addrStr = url.substr(info + 1, address - info - 1);
-
-        std::string_view::size_type schema{0};
-        if (auto protocol = addrStr.find_first_of('('); protocol != std::string_view::npos) {
-            // 存在协议名称
-            protocol_ = addrStr.substr(0, protocol);
-
-            std::string_view::size_type hostEnd{0};
-            if (protocol_ == "unix") {
-                hostEnd = addrStr.find_last_of(')');
-                host_   = addrStr.substr(protocol + 1, hostEnd - protocol - 1);
-                schema  = hostEnd + 2;
+            if (const auto colon = userInfo.find_first_of(':'); colon != std::string_view::npos) {
+                user_     = userInfo.substr(0, colon);
+                password_ = userInfo.substr(colon + 1);
             } else {
-                hostEnd = addrStr.find_last_of(':');
-                host_   = addrStr.substr(protocol + 1, hostEnd - protocol - 1);
-
-                auto port    = addrStr.find_last_of(')');
-                auto portStr = addrStr.substr(hostEnd + 1, port - hostEnd - 1);
-                if (auto [ptr, ec] = std::from_chars(portStr.begin(), portStr.end(), port_); ptr != portStr.end()) {
-                    return false;
-                }
-                schema = port + 2;
+                user_ = userInfo;
             }
-        } else {
-            auto host = addrStr.find_last_of(':');
-            host_     = addrStr.substr(0, host);
+        }
 
-            auto port    = addrStr.find_last_of('/');
-            auto portStr = addrStr.substr(host + 1, port - host - 1);
-            if (auto [ptr, ec] = std::from_chars(portStr.begin(), portStr.end(), port_); ptr != portStr.end()) {
+        // 分离查询参数
+        if (const auto q = remaining.find('?'); q != std::string_view::npos) {
+            parseParams(remaining.substr(q + 1));
+            remaining = remaining.substr(0, q);
+        }
+
+        // 解析 protocol(host:port)/schema 或 host:port/schema
+        if (const auto paren = remaining.find('('); paren != std::string_view::npos) {
+            protocol_ = remaining.substr(0, paren);
+
+            auto closeParen = remaining.find(')');
+            if (closeParen == std::string_view::npos) {
                 return false;
             }
 
-            schema = port + 1;
+            auto address = remaining.substr(paren + 1, closeParen - paren - 1);
+
+            if (protocol_ == "unix") {
+                host_ = address;
+            } else if (!parseHostPort(address)) {
+                return false;
+            }
+
+            if (closeParen + 2 <= remaining.size()) {
+                schema_ = remaining.substr(closeParen + 2);
+            }
+        } else {
+            auto slash = remaining.find_last_of('/');
+            if (slash == std::string_view::npos) {
+                return false;
+            }
+
+            schema_ = remaining.substr(slash + 1);
+            if (!parseHostPort(remaining.substr(0, slash))) {
+                return false;
+            }
         }
-
-        schema_ = addrStr.substr(schema);
-
-        auto paramStr = url.substr(address + 1);
 
         return true;
     }
 
-    auto Driver() -> std::string & {
+    [[nodiscard]] auto Driver() const -> const std::string & {
         return driver_;
     }
 
-    auto User() -> std::string & {
+    [[nodiscard]] auto User() const -> const std::string & {
         return user_;
     }
 
-    auto Password() -> std::string & {
+    [[nodiscard]] auto Password() const -> const std::string & {
         return password_;
     }
 
-    auto Network() -> std::string & {
+    [[nodiscard]] auto Network() const -> const std::string & {
         return protocol_;
     }
 
-    auto Host() -> std::string & {
+    [[nodiscard]] auto Host() const -> const std::string & {
         return host_;
     }
 
@@ -104,11 +107,44 @@ public:
         return port_;
     }
 
-    auto Schema() -> std::string & {
+    [[nodiscard]] auto Schema() const -> const std::string & {
         return schema_;
     }
 
+    [[nodiscard]] auto Parameters() const -> const std::map<std::string, std::string> & {
+        return parameters_;
+    }
+
 private:
+    auto parseHostPort(std::string_view address) -> bool {
+        auto colon = address.find_last_of(':');
+        if (colon == std::string_view::npos) {
+            host_ = address;
+            return true;
+        }
+
+        host_          = address.substr(0, colon);
+        auto portStr   = address.substr(colon + 1);
+        auto [ptr, ec] = std::from_chars(portStr.data(), portStr.data() + portStr.size(), port_);
+        return ptr == portStr.data() + portStr.size() && ec == std::errc{};
+    }
+
+    void parseParams(std::string_view params) {
+        while (!params.empty()) {
+            auto amp  = params.find('&');
+            auto pair = (amp != std::string_view::npos) ? params.substr(0, amp) : params;
+
+            if (auto eq = pair.find('='); eq != std::string_view::npos) {
+                parameters_.emplace(pair.substr(0, eq), pair.substr(eq + 1));
+            }
+
+            if (amp == std::string_view::npos) {
+                break;
+            }
+            params = params.substr(amp + 1);
+        }
+    }
+
     std::string                        driver_{};
     std::string                        user_{};
     std::string                        password_{};
